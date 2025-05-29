@@ -1,10 +1,14 @@
-#import "../src/lib.typ": rowtable, expandcell
+#import "/src/lib.typ": rowtable, expandcell
 
 #set page(width: auto, height: auto, margin: (x: 0.2cm, y: 0.5cm))
 #set text(font: "Atkinson Hyperlegible Next")
+#let clr = if "dark" in sys.inputs { white } else { black }
+#set page(fill: white) if clr == black
+#set page(fill: none) if clr != black
+#set text(fill: clr)
 
 #{
-  set table.hline(stroke: 0.08em)
+  set table.hline(stroke: 0.08em + clr)
   show regex("\d"): super.with(size: 0.8em, typographic: false)
   show table.cell: it => { set text(size: 0.9em) if it.y >= 1; it }
   show table.cell.where(y: 0): emph

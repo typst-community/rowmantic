@@ -11,8 +11,13 @@ For improved table ergonomics, the table sizes the number of columns by the long
 
 ## Getting Started
 
-<img src="https://raw.githubusercontent.com/typst-community/rowmantic/refs/heads/main/docs/readmepicture1.png"
- alt="rowtable example, basic example with two rows" width="400px">
+<p>
+  <picture>
+    <source media="(prefers-color-scheme: light)" srcset="docs/figures/readmepicture1.svg">
+    <source media="(prefers-color-scheme: dark)" srcset="docs/figures/readmepicture1-dark.svg">
+    <img alt="rowtable example, basic" src="docs/figures/readmepicture1.svg">
+  </picture>
+</p>
 
 ```typ
 #import "@preview/rowmantic:0.1.0": rowtable
@@ -26,8 +31,13 @@ For improved table ergonomics, the table sizes the number of columns by the long
 
 ---
 
-<img src="https://raw.githubusercontent.com/typst-community/rowmantic/refs/heads/main/docs/readmepicture2.png"
- alt="rowtable example, glossing table" width="600px">
+<p>
+  <picture>
+    <source media="(prefers-color-scheme: light)" srcset="docs/figures/readmepicture2.svg">
+    <source media="(prefers-color-scheme: dark)" srcset="docs/figures/readmepicture2-dark.svg">
+    <img alt="rowtable example, glossing table" src="docs/figures/readmepicture2.svg">
+  </picture>
+</p>
 
 ```typ
 #import "@preview/rowmantic:0.1.0": rowtable, expandcell
