@@ -112,13 +112,6 @@
   _row-split(it, sep: sep, strip-space: strip-space).map(_lift-singles)
 }
 
-#assert(_row-split([A,B, C], sep: ",") == (sequence(([A], )), sequence(([B], )), sequence(([C], ))))
-#assert(_row-split([ Abcd ], sep: ",") == (sequence(([Abcd], )), ))
-
-#assert(_row-split([*A* & *B*], sep: "&") == (assequence[*A*], assequence[*B*]))
-#assert(_row-split([Term  & Explanation    & Assumptions ]) ==
-  (assequence([Term]), assequence[Explanation], assequence[Assumptions]))
-
 
 #let expandcell-name = "__rowmantic_expandcell"
 

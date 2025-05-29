@@ -1,3 +1,3 @@
-#import "/src/lib.typ" as my-package
+#import "/src/lib.typ": rowtable, row-split, expandcell
 
-Hello World
+// TODO
