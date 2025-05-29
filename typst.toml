@@ -12,13 +12,12 @@ categories = ["components"]
 keywords = ["table", "row", "delimiter", "latex"]
 
 exclude = [
-  "**.pdf",
-  "**.png",
-  "*-example.typ",
-  "scripts",
-  "docs",
-  ".github",
-  "tests",
   ".typstignore",
+  "*-example.typ",
+  "docs",
+  "Justfile",
+  ".github",
+  "scripts",
+  "tests",
   "Justfile",
 ]
