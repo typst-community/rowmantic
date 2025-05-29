@@ -14,5 +14,8 @@ Justfile
 # PDF manuals should be included so that they can be linked, but not their sources
 docs/*
 !docs/*.pdf
+# include for readme
+!docs/figures
+!docs/figures/*.svg
 *-example.typ
 *-example.pdf
