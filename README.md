@@ -3,7 +3,7 @@ A Typst package for editing tables row-by-row.
 
 The idea is a row-oriented way to input tables, with just a little less syntactical overhead than the usual `table` function in Typst.
 
-The function does a shallow split of the input row by a configurable separator, which is `&` by default.
+The `rowtable` function works like the usual `table` function but takes one markup block (`[...]`) per row, and the markup is split internally#footnote[But shallowly - not looking into styled or nested content] on a delimiter which is `&` by default.
 
 For example, given typst `[A & B & C]`, the effective table row is `..([A], [B], [C])`.
 
@@ -82,3 +82,7 @@ A more in-depth description of usage. Any template arguments? A complicated exam
 
 *To be added*
 
+
+## License
+
+The package is distributed under the terms of the European Union Public License v1.2 or any later version, which is an OSI-approved weakly copyleft license. The License is distributed with the package.

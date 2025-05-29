@@ -1,3 +1,6 @@
+// Copyright 2025 Ulrik Sverdrup "bluss" and rowmantic contributors.
+// Distributed under the terms of the EUPL v1.2 or any later version.
+
 #import "src/lib.typ": rowtable, expandcell
 
 #let template = body => {
@@ -31,23 +34,21 @@
   )
 }
 
-= Rowmantic `rowtable`
+= `rowmantic`: Tables row by row
+A Typst package for editing tables row-by-row.
 
-Edit tables row-by row. The idea is a row-oriented way to input tables, with just a little less syntactical overhead than the usual `table` function in Typst.
+The idea is a row-oriented way to input tables, with just a little less syntactical overhead than the usual `table` function in Typst.
 
-The function does a shallow split of the input row by a configurable separator, which is `&` by default.
+The `rowtable` function works like the usual `table` function but takes one markup block (`[...]`) per row, and the markup is split internally#footnote[But shallowly - not looking into styled or nested content] on a delimiter which is `&` by default.
 
-#{
-rowtable(
+#rowtable(
   separator: "&",
   stroke: none,
   [Input:                     & ```typst [A & B & C]```       ],
   [Table cells (effectively): & ```typst ..([A], [B], [C])``` ],
 )
-}
 
 For improved table ergonomics, the table sizes the number of columns by the longest row. All rows are effectively completed so that they are of full length. This creates a better the editing experience, as rows can be filled out gradually.
-
 
 == Examples
 
