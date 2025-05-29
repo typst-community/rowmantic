@@ -1,69 +1,70 @@
-# The `my-package` Package
-<div align="center">Version 0.1.0</div>
+# `rowmantic`: Tables row by row
+A Typst package for editing tables row-by-row.
 
-A short description about the project and/or client.
+The idea is a row-oriented way to input tables, with just a little less syntactical overhead than the usual `table` function in Typst.
 
-## Template adaptation checklist
+The function does a shallow split of the input row by a configurable separator, which is `&` by default.
 
-- [ ] Fill out `README.md`
-  - Change the `my-package` package name, including code snippets
-  - Check section contents and/or delete sections that don't apply
-- [ ] Check and/or replace `LICENSE` by something that suits your needs
-- [ ] Fill out `typst.toml`
-  - See also the [typst/packages README](https://github.com/typst/packages/?tab=readme-ov-file#package-format)
-- [ ] Adapt Repository URLs in `CHANGELOG.md`
-  - Consider only committing that file with your first release, or removing the "Initial Release" part in the beginning
-- [ ] Adapt or deactivate the release workflow in `.github/workflows/release.yml`
-  - to deactivate it, delete that file or remove/comment out lines 2-4 (`on:` and following)
-  - to use the workflow
-    - [ ] check the values under `env:`, particularly `REGISTRY_REPO`
-    - [ ] if you don't have one, [create a fine-grained personal access token](https://github.com/settings/tokens?type=beta) with [only Contents permission](https://stackoverflow.com/a/75116350/371191) for the `REGISTRY_REPO`
-    - [ ] on this repo, create a secret `REGISTRY_TOKEN` (at `https://github.com/[user]/[repo]/settings/secrets/actions`) that contains the so created token
+For example, given typst `[A & B & C]`, the effective table row is `..([A], [B], [C])`.
 
-    if configured correctly, whenever you create a tag `v...`, your package will be pushed onto a branch on the `REGISTRY_REPO`, from which you can then create a pull request against [typst/packages](https://github.com/typst/packages/)
-- [ ] remove/replace the example test case
-- [ ] (add your actual code, docs and tests)
-- [ ] remove this section from the README
+For improved table ergonomics, the table sizes the number of columns by the longest row. All rows are effectively completed so that they are of full length. This creates a better the editing experience, as rows can be filled out gradually.
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on the typst web app. Perhaps a short code example on importing the package and a very simple teaser usage.
+```typ
+#import "@preview/rowmantic:0.1.0": rowtable
+
+#rowtable(
+  stroke: 0.5pt,
+  [Input tables & row     & by      & row       ],
+  [Otherwise    & same as & regular & `#table`  ],
+)
+```
+
+
+<img src="https://gitlab.com/blussbus/typst-recipes/-/raw/main/rowtable/docs/readmepicture.png"
+ alt="rowtable example, glossing table" width="600px">
 
 ```typ
-#import "@preview/my-package:0.1.0": *
+#import "@preview/rowmantic:0.1.0": rowtable, expandcell
 
-#show: my-show-rule.with()
-#my-func()
+#{
+  set table.hline(stroke: 0.08em)
+  show regex("\d"): super.with(size: 0.8em, typographic: false)
+  show table.cell: it => { set text(size: 0.9em) if it.y >= 1; it }
+  show table.cell.where(y: 0): emph
+  rowtable(
+    separator: ",",   // configurable separator
+    stroke: 0pt,      // pass through table arguments, hlines, cells et.c.
+    inset: (x: 0em),
+    column-gutter: 0.9em,
+    // rows are filled to be equal length after collecting cells
+    [goá   , iáu-boē    , koat-tēng   , tang-sî   , boeh  , tńg-khì    ],
+    [goa1  , iau1-boe3  , koat2-teng3 , tang7-si5 , boeh2 , tng1-khi3  ],
+    [goa2  , iau2-boe7  , koat4-teng7 , tang1-si5 , boeh4 , tng2-khi3  ],
+    [I     , not-yet    , decide      , when      , want  , return.    ],
+    table.hline(),
+    // cell that fills remainder of row
+    expandcell["I have not yet decided when I shall return."],
+  )
+}
 ```
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./thumbnail-dark.svg">
-  <img src="./thumbnail-light.svg">
-</picture>
+This example [taken from Wikipedia](https://en.wikipedia.org/wiki/Interlinear_gloss)
 
+<!--
 ### Installation
 
-A step by step guide that will tell you how to get the development environment up and running. This should explain how to clone the repo and where to (maybe a link to the typst documentation on it), along with any pre-requisite software and installation steps.
-
-```
-$ First step
-$ Another step
-$ Final step
-```
+TBD
+-->
 
 ## Usage
 
 A more in-depth description of usage. Any template arguments? A complicated example that showcases most if not all of the functions the package provides? This is also an excellent place to signpost the manual.
 
 ```typ
-#import "@preview/my-package:0.1.0": *
-
-#let my-complicated-example = ...
+#import "@preview/rowmantic:0.1.0": rowtable, expandcell
 ```
 
-## Additional Documentation and Acknowledgments
+*To be added*
 
-* Project folder on server:
-* Confluence link:
-* Asana board:
-* etc...

@@ -8,9 +8,8 @@ default:
 
 # generate manual
 doc:
-  typst compile docs/manual.typ docs/manual.pdf
-  typst compile docs/thumbnail.typ thumbnail-light.svg
-  typst compile --input theme=dark docs/thumbnail.typ thumbnail-dark.svg
+  # typst compile docs/manual.typ docs/manual.pdf
+  typst compile -f png docs/readmepicture.typ  --ppi 300
 
 # run test suite
 test *args:
@@ -42,3 +41,9 @@ uninstall-preview: (remove "@preview")
 
 # run ci suite
 ci: test doc
+
+
+
+examples:
+	typst compile *-example.typ
+
