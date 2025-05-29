@@ -9,7 +9,8 @@ default:
 # generate manual
 doc:
   # typst compile docs/manual.typ docs/manual.pdf
-  typst compile -f png docs/readmepicture.typ  --ppi 300
+  typst compile -f png docs/readmepicture1.typ  --ppi 300
+  typst compile -f png docs/readmepicture2.typ  --ppi 300
 
 # run test suite
 test *args:

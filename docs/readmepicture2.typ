@@ -1,6 +1,6 @@
 #import "../src/lib.typ": rowtable, expandcell
 
-#set page(width: auto, height: auto, margin: 1cm)
+#set page(width: auto, height: auto, margin: (x: 0.2cm, y: 0.5cm))
 #set text(font: "Atkinson Hyperlegible Next")
 
 #{
