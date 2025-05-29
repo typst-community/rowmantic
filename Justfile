@@ -14,6 +14,14 @@ doc:
   typst compile -f svg docs/figures/readmepicture2.typ docs/figures/readmepicture2.svg
   typst compile -f svg docs/figures/readmepicture2.typ docs/figures/readmepicture2-dark.svg --input dark=true
 
+
+test-readme:
+  # test compile readme examples
+  # Extract each fenced block from the readme
+  sed -n '/^```/,/^```/ p' < README.md > tests/_readme_code.typ
+  typst compile tests/readme.typ --input inputfile=_readme_code.typ
+
+
 # run test suite
 test *args:
   tt run {{ args }}

@@ -54,3 +54,10 @@ jobs:
       - name: Build docs
         if: ${{ matrix.typst-version.doc }}
         run: just doc
+
+      - name: Test Readme Examples
+        if: ${{ matrix.typst-version.doc }}
+        run: |
+          just install-preview
+          just test-readme
+          just uninstall-preview
