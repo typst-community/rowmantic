@@ -17,9 +17,7 @@ doc:
 
 test-readme:
   # test compile readme examples
-  # Extract each fenced block from the readme
-  sed -n '/^```/,/^```/ p' < README.md > tests/_readme_code.typ
-  typst compile tests/readme.typ --input inputfile=_readme_code.typ
+  typst compile tests/readme.typ
 
 
 # run test suite
