@@ -69,8 +69,7 @@ For improved table ergonomics, the table sizes the number of columns by the long
     [I     , not-yet    , decide      , when      , want  , return.    ],
     table.hline(),
     // cell that fills remainder of row
-    [#expandcell["I have not yet decided when I shall return."],
-     #align(right, sym.floral)],
+    expandcell["I have not yet decided when I shall return."],
   )
 }
 ```)
