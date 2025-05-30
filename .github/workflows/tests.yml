@@ -26,6 +26,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install dependencies (ubuntu packages)
+        run: sudo apt -y install scour
+
       - name: Install just and tytanic
         uses: taiki-e/install-action@v2
         with:
@@ -53,7 +56,9 @@ jobs:
 
       - name: Build docs
         if: ${{ matrix.typst-version.doc }}
-        run: just doc
+        run: |
+          just doc
+          just readme
 
       - name: Test Readme Examples
         if: ${{ matrix.typst-version.doc }}
