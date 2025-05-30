@@ -47,10 +47,6 @@
   sequence(_trim(_trim(seq.children).rev(), reverse: true).rev())
 }
 
-#let assequence(elt) = {
-  if type(elt) == array { sequence(elt) } else { sequence((elt, )) }
-}
-
 /// Can split only text and sequence into array of sequence
 /// - it (content): text or sequence or other content
 /// - sep (str): separator
