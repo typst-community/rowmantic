@@ -150,10 +150,24 @@
   () // ensures empty row maps to empty row
 }
 
-/// Table which takes cell input row-by row, see examples.
+
+/// Table which takes cell input row-by row
+///
+/// Each row is passed as one markup block (`[...]` syntax) which is split internally on
+/// the separator. Rows that are shorter than the longest row (or the configured `columns`)
+/// will be filled to be the same length as all other rows.
+///
+/// Leading/trailing spaces are removed from each table element in a row.
+/// To preserve such spaces, use `~`.
+///
+/// This function wraps the standard `table` function and passes through all its regular arguments.
+///
+/// Passing `table.cell` outside rows is possible but not recommended. Passing `#table.cell[]`
+/// inside a row, between separators, is supported and can be used with `colspan` > 1.
 ///
 /// - args (arguments): Rows like `[A & B & C]` and other positional or named table function parameters.
-///   Arguments to `table` pass through.
+///   Arguments to `table` pass through. A `columns` argument to the table is possible but not
+///   mandatory.
 /// - separator (str): configurable cell separator in a row. Good choices are `&`, `,`, or `;`.
 ///   Escape the separator using e.g. `\&`
 /// - row-filler (any): object used to fill rows that are too short
@@ -196,6 +210,8 @@
 }
 
 /// An expandcell is a `table.cell` that expands its colspan to available width
+/// The expandcell can be passed alone as a row, or should be placed inside a row markup block.
+///
 /// - args (arguments): table.cell arguments. colspan and rowspan are not permitted.
 /// - body (content): cell body
 #let expandcell(..args, body) = {
