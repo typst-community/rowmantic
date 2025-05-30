@@ -6,13 +6,21 @@ export TYPST_ROOT := root
 default:
   @just --list --unsorted
 
-# generate manual
 doc:
-  # typst compile docs/manual.typ docs/manual.pdf
-  typst compile -f svg docs/figures/readmepicture1.typ docs/figures/readmepicture1.svg
-  typst compile -f svg docs/figures/readmepicture1.typ docs/figures/readmepicture1-dark.svg --input dark=true
-  typst compile -f svg docs/figures/readmepicture2.typ docs/figures/readmepicture2.svg
-  typst compile -f svg docs/figures/readmepicture2.typ docs/figures/readmepicture2-dark.svg --input dark=true
+    # TODO: generate manual
+
+readme:
+    #!/bin/bash
+    # generate readme pictures
+    for file in readmepicture1 readmepicture2; do
+        for suffix in "" "-dark"; do
+            typst compile -f svg docs/figures/$file.typ out.svg
+            typst compile -f svg docs/figures/$file.typ out-dark.svg --input dark=true
+        done
+        scour --no-line-breaks --shorten-ids -i out.svg docs/figures/$file.svg
+        scour --no-line-breaks --shorten-ids -i out-dark.svg docs/figures/$file-dark.svg
+        rm -v out.svg out-dark.svg
+    done
 
 
 test-readme:

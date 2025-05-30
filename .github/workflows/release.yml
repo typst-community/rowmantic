@@ -19,6 +19,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install dependencies (ubuntu packages)
+        run: sudo apt -y install scour
+
       - name: Install just
         uses: taiki-e/install-action@v2
         with:
@@ -43,6 +46,7 @@ jobs:
       - name: Build package
         run: |
           just doc
+          just readme
           just package out
 
       - name: Checkout package registry
