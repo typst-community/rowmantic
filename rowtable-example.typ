@@ -84,7 +84,7 @@ Example from Wikipedia#footnote[https://en.wikipedia.org/wiki/Interlinear_gloss]
   show table.cell.where(x: 0): x => math.bold(math.upright(x))
   rowtable(
     table.hline(),
-    [Term     & Explanation                   & Assumptions ],
+    table.header([Term  & Explanation         & Assumptions ]),
     table.hline(),
     [$X$      & Explanatory variables         & Non-random ],
     [$Y$      & $Y_1, ..., Y_n$ observations  & *Pairwise independent*],
@@ -132,11 +132,10 @@ Example from Wikipedia#footnote[https://en.wikipedia.org/wiki/Interlinear_gloss]
     [&]
     table.cell(stroke: 1pt + red)[`table.cell`]
   },
-  [#table.cell(fill: yellow.lighten(90%), colspan: 2)[Cell with colspan=2] &
-   #table.cell[--]],
+  [#table.cell(fill: yellow.lighten(90%), colspan: 2)[Cell with colspan=2] &#none],
   [#expandcell(fill: yellow.lighten(90%))[Expandcell] & #expandcell[the rest]],
   [&&],
-  [],
+  table.footer([]),
 )
 ```)
 

@@ -88,9 +88,15 @@
   }
 }
 
+
+// is content with given element function (and not none)
+// these are separate for performance concern (maybe silly?)
+#let isfunc(arg, f) = arg != none and arg.func() == f
+#let isfuncv(arg, ..fs) = arg != none and fs.pos().any(f => arg.func() == f)
+
 /// Lift sequences of single items to the item
 #let _lift-singles = it => {
-  if it != none and it.func() == sequence and it.children.len() == 1 {
+  if isfunc(it, sequence) and it.children.len() == 1 {
     it.children.at(0)
   } else {
     it
@@ -109,16 +115,15 @@
   _row-split(it, sep: sep, strip-space: strip-space).map(_lift-singles)
 }
 
-
 #let expandcell-name = "__rowmantic_expandcell"
 
 /// Compute row length of array of elements, taking table.cell.colspan into account
 #let _row-len(row) = {
   let len = 0
   for elt in row {
-    if elt != none and elt.func() == table.cell and elt.has("colspan") {
+    if isfunc(elt, table.cell) and elt.has("colspan") {
       len += elt.colspan
-    } else if elt != none and (elt.func() == table.hline or elt.func() == table.vline) {
+    } else if isfuncv(elt, table.hline, table.vline) {
       len += 0
     } else {
       // this case includes expandcell
@@ -128,10 +133,8 @@
   len
 }
 
-#let is-expandcell(elt) = {
-  (elt != none and type(elt) == content and elt.func() == metadata and type(elt.value) == dictionary
-  and expandcell-name in elt.value)
-}
+#let is-expandcell(elt) = (isfunc(elt, metadata)
+  and type(elt.value) == dictionary and expandcell-name in elt.value)
 
 /// Handle any expandcell
 #let _expand-cells(row, max-len) = {
@@ -150,6 +153,13 @@
   () // ensures empty row maps to empty row
 }
 
+/// wrap table.header/footer function
+#let _headfootwrap(elt) = rows => {
+  let fields = elt.fields()
+  let _ = fields.remove("children")
+  (elt.func())(..rows, ..fields)
+}
+
 
 /// Table which takes cell input row-by row
 ///
@@ -165,6 +175,8 @@
 /// Passing `table.cell` outside rows is possible but not recommended. Passing `#table.cell[]`
 /// inside a row, between separators, is supported and can be used with `colspan` > 1.
 ///
+/// It is supported to input rows inside `table.header` and `table.footer`.
+///
 /// - args (arguments): Rows like `[A & B & C]` and other positional or named table function parameters.
 ///   Arguments to `table` pass through. A `columns` argument to the table is possible but not
 ///   mandatory.
@@ -172,11 +184,18 @@
 ///   Escape the separator using e.g. `\&`
 /// - row-filler (any): object used to fill rows that are too short
 #let rowtable(..args, separator: "&", row-filler: none) = {
-  let procarg = () // processed positional arguments
+  // processed positional arguments
+  // dictionary with either of these:
+  //  (row: array, wrap: function?)
+  //  (posarg: any)
+  let procarg = ()
 
   for arg in args.pos() {
-    if type(arg) == content and (arg.func() == sequence or arg.func() == text) {
+    if isfunc(arg, sequence) or isfunc(arg, text) {
       procarg.push((row: row-split(arg, sep: separator)))
+    } else if isfuncv(arg, table.header, table.footer) and arg.children.len() == 1 {
+      let body = arg.children.at(0).body
+      procarg.push((row: row-split(body, sep: separator), wrap: _headfootwrap(arg)))
     } else if is-expandcell(arg) {
       procarg.push((row: (arg, )))
     } else {
@@ -194,9 +213,13 @@
 
   let targs = ()
   let row-index = 0
-  for parg in procarg {
+  for (pindex, parg) in procarg.enumerate() {
     if "row" in parg {
-      targs += rows.at(row-index)
+      if "wrap" in parg {
+        targs.push((parg.wrap)(rows.at(row-index)))
+      } else {
+        targs += rows.at(row-index)
+      }
       row-index += 1
     } else {
       targs.push(parg.posarg)

@@ -92,6 +92,8 @@ TBD
 /// Passing `table.cell` outside rows is possible but not recommended. Passing `#table.cell[]`
 /// inside a row, between separators, is supported and can be used with `colspan` > 1.
 ///
+/// It is supported to input rows inside `table.header` and `table.footer`.
+///
 /// - args (arguments): Rows like `[A & B & C]` and other positional or named table function parameters.
 ///   Arguments to `table` pass through. A `columns` argument to the table is possible but not
 ///   mandatory.
