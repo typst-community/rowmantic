@@ -207,7 +207,7 @@
   if type(columns-arg) == array { columns-arg = columns-arg.len() }
 
   let rows = procarg.filter(elt => "row" in elt).map(elt => elt.row)
-  let max-len = calc.max(columns-arg, ..rows.map(r => _row-len(r)))
+  let max-len = calc.max(1, calc.max(columns-arg, ..rows.map(r => _row-len(r))))
   let rows = rows.map(r => _expand-cells(r, max-len))
   let rows = rows.map(r => r + (row-filler, ) * (max-len - _row-len(r)))
 
