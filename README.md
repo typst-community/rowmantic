@@ -100,7 +100,10 @@ TBD
 /// - separator (str): configurable cell separator in a row. Good choices are `&`, `,`, or `;`.
 ///   Escape the separator using e.g. `\&`
 /// - row-filler (any): object used to fill rows that are too short
-#let rowtable(..args, separator: "&", row-filler: none) = { [...] }
+/// - table (function): Table function to use to build the final table. Intended for use with
+///   table wrappers from other packages. (The function `{arguments}` can be used for
+///   argument pass-through.)
+#let rowtable(..args, separator: "&", row-filler: none, table: std.table) = { [...] }
 ```
 
 ### `expandcell`

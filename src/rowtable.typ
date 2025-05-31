@@ -182,8 +182,11 @@
 ///   mandatory.
 /// - separator (str): configurable cell separator in a row. Good choices are `&`, `,`, or `;`.
 ///   Escape the separator using e.g. `[\&]`
-/// - row-filler (any): object used to fill rows that are too short
-#let rowtable(..args, separator: "&", row-filler: none) = {
+/// - row-filler (any): value used to fill rows that are too short
+/// - table (function): Table function to use to build the final table. Intended for use with
+///   table wrappers from other packages. (The function `{arguments}` can be used for
+///   argument pass-through.)
+#let rowtable(..args, separator: "&", row-filler: none, table: std.table) = {
   // processed positional arguments
   // dictionary with either of these:
   //  (row: array, wrap: function?)
@@ -193,7 +196,7 @@
   for arg in args.pos() {
     if isfunc(arg, sequence) or isfunc(arg, text) {
       procarg.push((row: row-split(arg, sep: separator)))
-    } else if isfuncv(arg, table.header, table.footer) and arg.children.len() == 1 {
+    } else if isfuncv(arg, std.table.header, std.table.footer) and arg.children.len() == 1 {
       let body = arg.children.at(0).body
       procarg.push((row: row-split(body, sep: separator), wrap: _headfootwrap(arg)))
     } else if is-expandcell(arg) {
@@ -225,6 +228,7 @@
       targs.push(parg.posarg)
     }
   }
+
   table(
     columns: max-len,
     ..args.named(),
