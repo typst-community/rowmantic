@@ -121,8 +121,8 @@
 #let _row-len(row) = {
   let len = 0
   for elt in row {
-    if isfunc(elt, table.cell) and elt.has("colspan") {
-      len += elt.colspan
+    if isfunc(elt, table.cell) {
+      len += elt.at("colspan", default: 1)
     } else if isfuncv(elt, table.hline, table.vline) {
       len += 0
     } else {
