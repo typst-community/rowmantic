@@ -4,7 +4,7 @@
 #import "src/lib.typ": rowtable, expandcell
 
 #let template = body => {
-  set document(date: none)
+  set document(date: none, title: "rowmantic - examples")
   set page(numbering: "1")
   set text(font: "Atkinson Hyperlegible Next")
   show raw: set text(font: "Fira Code", ligatures: false, features: (calt: 0))
@@ -147,5 +147,28 @@ Example from Wikipedia#footnote[https://en.wikipedia.org/wiki/Interlinear_gloss]
   stroke: 0.5pt,
   [First           ;; This is a literal \;\; and ; and , and & ],
   [Second; Third   ;; Equation $pi = 3.1415...$],
+)
+```)
+
+
+== Combine with pillar (or other table function)
+
+Use the `table` argument to let rowtable pass its result to a different table function rather than the standard one, for example `pillar.table` (shown below) or `zero.ztable`.
+
+#show-example(```typst
+#import "@preview/pillar:0.3.2"
+#set text(font: "Libertinus Serif")
+#show table.cell.where(y: 0): strong
+#rowtable(
+  separator: ",",
+  table: pillar.table,
+  cols: "rCCCCC",
+  format: (auto, ) * 4 + ((uncertainty-mode: "compact"), auto),
+  column-gutter: (0.5em, 0pt),
+  stroke: (x, y) => if y == 0 { (bottom: 0.75pt) },
+  table.header(
+  [Isotope,       Z,  N,  Half-life,  Mass (Da),        Abundance (%) ]),
+  [#super[107]Ag, 47, 60, Stable,     106.9050915(26),  51.839(8) ],
+  [#super[109]Ag, 47, 62, Stable,     108.9047558(14),  48.161(8) ],
 )
 ```)
