@@ -144,10 +144,8 @@ Example from Wikipedia#footnote[https://en.wikipedia.org/wiki/Interlinear_gloss]
 #show-example(```typst
 #rowtable(
   separator: ";;",
-  align: horizon,
-  stroke: (x, y) => (y: int(y <= 0) * 0.9pt + 0.1pt, x: 0.1pt),
+  stroke: 0.5pt,
   [First           ;; This is a literal \;\; and ; and , and & ],
   [Second; Third   ;; Equation $pi = 3.1415...$],
-  table.hline(stroke: 1pt),
 )
 ```)
