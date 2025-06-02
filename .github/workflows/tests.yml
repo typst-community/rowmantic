@@ -41,7 +41,10 @@ jobs:
           typst-version: ${{ matrix.typst-version.typst }}
 
       - name: Run test suite
-        run: just test
+        run: |
+          just install-preview
+          just test
+          just uninstall-preview
 
       - name: Archive test results
         uses: actions/upload-artifact@v4
@@ -59,10 +62,3 @@ jobs:
         run: |
           just doc
           just readme
-
-      - name: Test Readme Examples
-        if: ${{ matrix.typst-version.doc }}
-        run: |
-          just install-preview
-          just test-readme
-          just uninstall-preview

@@ -22,11 +22,6 @@ readme:
     done
 
 
-# test compile readme
-test-readme:
-  typst compile tests/readme.typ
-
-
 # run test suite
 test *args:
   tt run {{ args }}
@@ -58,8 +53,10 @@ uninstall-preview: (remove "@preview")
 # run ci suite
 ci: test doc
 
-
-
 examples:
 	typst compile *-example.typ
+
+# run tt in docker
+ttd *args: (package ".typdockerpkg/preview") && (remove ".typdockerpkg/preview")
+    docker run -e TYPST_PACKAGE_PATH=/data/.typdockerpkg/ --rm -it -v $PWD:/data ghcr.io/tingerrr/tytanic:v0.2.2 --root data {{args}}
 
