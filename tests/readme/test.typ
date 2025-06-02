@@ -1,3 +1,7 @@
+/// [ppi: 72]
+///
+
+#set page(width: auto, height: auto, margin: 5mm)
 #let eval-examples(filename) = {
   // Extract each ```typ ``` block from the readme
   // Sed can do this: sed -n '/^```/,/^```/ p' < README.md
@@ -24,19 +28,20 @@
   })
   assert(_rest == ())
 
-  // eval raw to typst
-  show raw.where(lang: "typ"): it => {
-    eval(it.text, mode: "markup")
+  for (index, example) in examples.enumerate(start: 1) {
+    text(size: 0.5em)[*Example* #index]
+    line(length: 10cm, stroke: 0.5pt)
+    // eval markdown input to typst raw block
+    let rwb = eval(example.join("\n"), mode: "markup")
+    // eval raw code to typst
+    if rwb.lang in ("typ", "typst") {
+      eval(rwb.text, mode: "markup")
+    } else {
+      rwb
+    }
+    line(length: 10cm, stroke: 0.5pt)
   }
 
-  // eval fenced markdown to raw block
-  set heading(numbering: "1")
-  for example in examples {
-    [= Example]
-    line(length: 100%)
-    eval(example.join("\n"), mode: "markup")
-    line(length: 100%)
-  }
 }
 
 #eval-examples("/README.md")
