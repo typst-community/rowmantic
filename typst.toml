@@ -12,6 +12,7 @@ categories = ["components"]
 keywords = [
     "table",
     "row",
+    "rowtable",
     "delimiter",
     "separator",
     "latex",
