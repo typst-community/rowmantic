@@ -47,6 +47,16 @@
   sequence(_trim(_trim(seq.children).rev(), reverse: true).rev())
 }
 
+// is content with given element function (and not none)
+// these are separate for performance concern (maybe silly?)
+#let isfunc(arg, f) = arg != none and arg.func() == f
+#let isfuncv(arg, ..fs) = arg != none and fs.pos().any(f => arg.func() == f)
+
+#let expandcell-name = "__rowmantic_expandcell"
+#let is-expandcell(elt) = (isfunc(elt, metadata)
+  and type(elt.value) == dictionary and expandcell-name in elt.value)
+
+
 /// Can split only text and sequence into array of sequence
 /// - it (content): text or sequence or other content
 /// - sep (str): separator
@@ -83,16 +93,13 @@
     } else {
       result
     }
+  } else if is-expandcell(it) {
+    (it, )
   } else {
     it
   }
 }
 
-
-// is content with given element function (and not none)
-// these are separate for performance concern (maybe silly?)
-#let isfunc(arg, f) = arg != none and arg.func() == f
-#let isfuncv(arg, ..fs) = arg != none and fs.pos().any(f => arg.func() == f)
 
 /// Lift sequences of single items to the item
 #let _lift-singles = it => {
@@ -115,7 +122,6 @@
   _row-split(it, sep: sep, strip-space: strip-space).map(_lift-singles)
 }
 
-#let expandcell-name = "__rowmantic_expandcell"
 
 /// Compute row length of array of elements, taking table.cell.colspan into account
 #let _row-len(row) = {
@@ -133,8 +139,6 @@
   len
 }
 
-#let is-expandcell(elt) = (isfunc(elt, metadata)
-  and type(elt.value) == dictionary and expandcell-name in elt.value)
 
 /// Handle any expandcell
 #let _expand-cells(row, max-len) = {
@@ -194,13 +198,11 @@
   let procarg = ()
 
   for arg in args.pos() {
-    if isfunc(arg, sequence) or isfunc(arg, text) {
+    if isfunc(arg, sequence) or isfunc(arg, text) or is-expandcell(arg) {
       procarg.push((row: row-split(arg, sep: separator)))
     } else if isfuncv(arg, std.table.header, std.table.footer) and arg.children.len() == 1 {
       let body = arg.children.at(0).body
       procarg.push((row: row-split(body, sep: separator), wrap: _headfootwrap(arg)))
-    } else if is-expandcell(arg) {
-      procarg.push((row: (arg, )))
     } else {
       procarg.push((posarg: arg))
     }
