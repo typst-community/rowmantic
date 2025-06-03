@@ -8,6 +8,8 @@ All notable changes to this project will be documented in this file.
 
 - `table` parameter for `rowtable`, to configure which table function to use;
   this allows using rowtable with other table wrappers like `zero.ztable`. #3
+- `table.header` and `table.footer` can take a single `expandcell` as their
+  content. #5
 
 
 ## [0.1.0] - 2025-05-30
