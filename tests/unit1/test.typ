@@ -31,3 +31,8 @@
   arguments(columns: 3, [S], table.cell(colspan: 2)[T], [A], [B], [C], ))
 #assert.eq(rowtable(table: arguments, columns: 4, [#expandcell[S]& #expandcell[T]]),
   arguments(columns: 4, table.cell(colspan: 3)[S], table.cell(colspan: 1)[T]))
+
+#assert.eq(rowtable(table: arguments, [A&B], table.header(expandcell[A])),
+  arguments(columns: 2, [A], [B], table.header(table.cell(colspan: 2)[A])))
+#assert.eq(rowtable(table: arguments, [A&B], table.footer(expandcell[A])),
+  arguments(columns: 2, [A], [B], table.footer(table.cell(colspan: 2)[A])))
