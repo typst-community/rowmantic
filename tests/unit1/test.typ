@@ -7,6 +7,10 @@
 #assert.eq(row-split([Term  & Explanation    & Assumptions ]),
   (([Term]), [Explanation], [Assumptions]))
 
+// escape the delimiter
+#assert.eq(row-split([A,B\,C], sep: ","),  ([A], [B#sym.comma;C]))
+#assert.eq(row-split([A&B\&C], sep: "&"),  ([A], [B#sym.amp;C]))
+
 // table
 #assert.eq(rowtable(), table(columns: 1))
 #assert.eq(rowtable([A & B], [C]), table(columns: 2, [A], [B], [C], []))
