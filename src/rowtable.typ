@@ -55,8 +55,13 @@
 #let isfuncv(arg, ..fs) = arg != none and fs.pos().any(f => arg.func() == f)
 
 #let expandcell-name = "__rowmantic_expandcell"
+#let tombstone-name = "__rowmantic_tombstone"
 #let is-expandcell(elt) = (isfunc(elt, metadata)
   and type(elt.value) == dictionary and expandcell-name in elt.value)
+#let is-tombstone(elt) = isfunc(elt, metadata) and elt.value == tombstone-name
+/// a tombstone is not user visible and it's a placeholder for space occupied
+/// by a cell with rowspan in another row
+#let tombstone() = metadata(tombstone-name)
 
 
 /// Can split only text and sequence into array of sequence
@@ -191,6 +196,16 @@
   }
 }
 
+/// Add 1 to the given key in the dictionary
+///
+/// - dict (dictionary):
+/// - key (str):
+#let dictadd(dict, key, add: 1) = {
+  let value = dict.at(key, default: 0)
+  dict.insert(key, value + add)
+  dict
+}
+
 
 /// Table which takes cell input row-by row
 ///
@@ -270,11 +285,37 @@
   let columns-arg = args.at("columns", default: 0)
   if type(columns-arg) == array { columns-arg = columns-arg.len() }
 
-  let rows = procarg.filter(elt => "row" in elt).map(elt => elt.row)
+  // Handle rowspan in table cells by inserting tombstones (padding row lengths)
+  let rows = procarg.filter(elt => "row" in elt)
+  let (rows, _info) = rows.enumerate().fold(((), (:)), ((rows, info), (index, rowrec)) => {
+    // fold to rows: array of rows
+    //         info: dictionary mapping row index -> extra length
+    let row = rowrec.row
+    let extralen = info.at(str(index), default: 0)
+    for elt in row {
+      if isfunc(elt, std.table.cell) and elt.at("rowspan", default: 1) > 1 {
+        assert("wrap" not in rowrec, message: "rowspan not supported inside table header/footer")
+        let rowspan = elt.rowspan
+        let colspan = elt.at("colspan", default: 1)
+        for k in range(1, rowspan) {
+          info = dictadd(info, str(index + k), add: colspan)
+        }
+      }
+    }
+    // reserve space for rowspans using tombstones
+    if extralen > 0 { row += (tombstone(), ) * extralen }
+    rows.push(row)
+    (rows, info)
+  })
+  // colspan space inside a single row is handled here by _row-len
+  // expand expandcells, fill rows, remove tombstones
   let max-len = calc.max(1, calc.max(columns-arg, ..rows.map(r => _row-len(r))))
-  let rows = rows.map(r => _expand-cells(r, max-len))
-  let rows = rows.map(r => r + (row-filler, ) * (max-len - _row-len(r)))
+  let rows = rows.map(r => {
+    let r = _expand-cells(r, max-len)
+    r.filter(elt => not is-tombstone(elt)) + (row-filler, ) * (max-len - _row-len(r))
+  })
 
+  // arrange final table arguments
   let targs = ()
   let row-index = 0
   for (pindex, parg) in procarg.enumerate() {
