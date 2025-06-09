@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.0] - Unreleased
+
+### Added
+
+- `rowtable` now splits equations as rows, using the default separator `&` (the alignment marker) as cell separator. New examples added for this.
+- `rowtable` parameter `separator-eq` to control the separator used for equations
+
 ## [0.1.1] - 2025-06-03
 
 ### Added
@@ -27,5 +34,6 @@ Initial release
 
 <!-- versions are final when published on typst universe -->
 [Unreleased]: https://github.com/typst-community/rowmantic/compare/v0.1.0...HEAD
+[0.2.0]: https://github.com/typst-community/rowmantic/releases/tag/v0.2.0
 [0.1.1]: https://github.com/typst-community/rowmantic/releases/tag/v0.1.1
 [0.1.0]: https://github.com/typst-community/rowmantic/releases/tag/v0.1.0
