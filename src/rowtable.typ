@@ -213,13 +213,17 @@
 /// the separator. Rows that are shorter than the longest row (or the configured `columns`)
 /// will be filled to be the same length as all other rows.
 ///
+/// Rows can also be passed as equations (`$...$`) and they are then split into cells
+/// by `separator-eq`.
+///
 /// Leading/trailing spaces are removed from each table element in a row.
 /// To preserve such spaces, use `~`.
 ///
 /// This function wraps the standard `table` function and passes through all its regular arguments.
 ///
 /// Passing `{table.cell}` outside rows is possible but not recommended. Passing `[#table.cell[]]`
-/// inside a row, between separators, is supported and can be used with `colspan` >= 1.
+/// inside a row, between separators, is supported and can be used with `colspan` >= 1 and/or
+/// `rowspan >= 1`. Successive rows will take rowspans into account when computing their length.
 ///
 /// It is supported to input rows inside `table.header` and `table.footer`.
 ///
