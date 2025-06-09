@@ -40,3 +40,14 @@
   arguments(columns: 2, [A], [B], table.header(table.cell(colspan: 2)[A])))
 #assert.eq(rowtable(table: arguments, [A&B], table.footer(expandcell[A])),
   arguments(columns: 2, [A], [B], table.footer(table.cell(colspan: 2)[A])))
+
+// rowspan
+#let cell = table.cell
+#assert.eq(rowtable(table: arguments,
+  [#cell(rowspan: 2, colspan: 2)[A] & B],
+  [C & D],
+  [e & f & g & h]),
+  arguments(columns: 4,
+    cell(rowspan: 2, colspan: 2, [A]), [B], none,
+    [C], [D],
+    [e], [f], [g], [h]))
