@@ -236,10 +236,13 @@
 ///   By default depends on `separator` if possible otherwise falls back to `$&$`.
 ///   Set to `{none}` to disable splitting equations.
 /// - row-filler (any): value used to fill rows that are too short
+/// - column-width (length, relative, array): set column width without specifying number of columns.
+///   A single length is repeated for all columns. An array of lengths is repeated by extending with
+///   the last item.
 /// - table (function): Table function to use to build the final table. Intended for use with
 ///   table wrappers from other packages. (The function `{arguments}` can be used for
 ///   argument pass-through.)
-#let rowtable(..args, separator: "&", separator-eq: auto, row-filler: none, table: std.table) = {
+#let rowtable(..args, separator: "&", separator-eq: auto, row-filler: none, column-width: none, table: std.table) = {
   // type check parameters
   assert(type(separator) == str, message: "Separator must be string")
   assert(
@@ -335,8 +338,23 @@
     }
   }
 
+  // create column widths
+  let columns = if column-width != none {
+    assert(type(column-width) in (length, relative, array), message: "Unexpected column-width type")
+    if type(column-width) == array {
+      // repeat last item
+      if column-width.len() > max-len {
+        column-width.slice(0, max-len)
+      } else {
+        column-width + (column-width.at(-1), ) * (max-len - column-width.len())
+      }
+    } else {
+      (column-width, ) * max-len
+    }
+  } else { max-len }
+
   table(
-    columns: max-len,
+    columns: columns,
     ..args.named(),
     ..targs,
   )
