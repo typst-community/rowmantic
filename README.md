@@ -80,30 +80,37 @@ TBD
 ```typ
 /// Table which takes cell input row-by row
 ///
-/// Each row is passed as one markup block (`[...]` syntax) which is split internally on
+/// Each row is passed as one markup block (`{[...]}` syntax) which is split internally on
 /// the separator. Rows that are shorter than the longest row (or the configured `columns`)
 /// will be filled to be the same length as all other rows.
+///
+/// Rows can also be passed as equations (`$...$`) and they are then split into cells
+/// by `separator-eq`.
 ///
 /// Leading/trailing spaces are removed from each table element in a row.
 /// To preserve such spaces, use `~`.
 ///
 /// This function wraps the standard `table` function and passes through all its regular arguments.
 ///
-/// Passing `table.cell` outside rows is possible but not recommended. Passing `#table.cell[]`
-/// inside a row, between separators, is supported and can be used with `colspan` > 1.
+/// Passing `{table.cell}` outside rows is possible but not recommended. Passing `[#table.cell[]]`
+/// inside a row, between separators, is supported and can be used with `colspan` >= 1 and/or
+/// `rowspan >= 1`. Successive rows will take rowspans into account when computing their length.
 ///
 /// It is supported to input rows inside `table.header` and `table.footer`.
 ///
-/// - args (arguments): Rows like `[A & B & C]` and other positional or named table function parameters.
+/// - args (arguments): Rows like `{[A & B & C]}` and other positional or named table function parameters.
 ///   Arguments to `table` pass through. A `columns` argument to the table is possible but not
 ///   mandatory.
 /// - separator (str): configurable cell separator in a row. Good choices are `&`, `,`, or `;`.
-///   Escape the separator using e.g. `\&`
-/// - row-filler (any): object used to fill rows that are too short
+///   Escape the separator using e.g. `[\&]`
+/// - separator-eq (none, auto, equation): cell separator for equations, must be single symbol.
+///   By default depends on `separator` if possible otherwise falls back to `$&$`.
+///   Set to `{none}` to disable splitting equations.
+/// - row-filler (any): value used to fill rows that are too short
 /// - table (function): Table function to use to build the final table. Intended for use with
 ///   table wrappers from other packages. (The function `{arguments}` can be used for
 ///   argument pass-through.)
-#let rowtable(..args, separator: "&", row-filler: none, table: std.table) = { [...] }
+#let rowtable(..args, separator: "&", separator-eq: auto, row-filler: none, table: std.table) = { [...] }
 ```
 
 ### `expandcell`
