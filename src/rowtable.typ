@@ -4,6 +4,8 @@
 
 #let sequence = [].func()
 #let space = [ ].func()
+#let mathsymbol = $,$.body.func()
+#let align-point = $&$.body
 
 /// Trim starting or ending space in an array of content
 /// This removes the first single space (if any) in a sequence
@@ -63,6 +65,7 @@
 /// - strip-space (bool): Remove leading/trailing spaces from split sequences
 /// -> array, any
 #let _row-split(it, sep: "&", strip-space: true) = {
+  let contentsep = type(sep) == content
   if it.func() == text {
     return _row-split(sequence((it, )), sep: sep)
   } else if it.func() == sequence {
@@ -70,7 +73,7 @@
     let accum = ()
     for elt in it.children {
       if elt.func() == text {
-        if sep in elt.text {
+        if not contentsep and sep in elt.text {
           let parts = elt.text.split(sep)
           accum.push(parts.at(0))
           res.push(accum)
@@ -79,6 +82,9 @@
         } else {
           accum.push(elt)
         }
+      } else if contentsep and isfunc(elt, sep.func()) and elt == sep {
+        res.push(accum)
+        accum = ()
       } else {
         accum.push(elt)
       }
@@ -110,6 +116,7 @@
   }
 }
 
+#let asarray(elt) = if type(elt) == array { elt } else { (elt, ) }
 /// Take a sequence (content) and split it into an array by the given separator.
 /// It's split only shallowly, not deeply; the separators must exist in the uppermost sequence's
 /// content.
@@ -119,7 +126,11 @@
 /// - strip-space (bool): Remove leading/trailing spaces from split sequences
 /// -> array
 #let row-split(it, sep: "&", strip-space: true) = {
-  _row-split(it, sep: sep, strip-space: strip-space).map(_lift-singles)
+  asarray(_row-split(it, sep: sep, strip-space: strip-space)).map(_lift-singles)
+}
+
+#let _as-equations(eqs, block: false) = {
+  if type(eqs) == array { eqs.map(math.equation.with(block: block)) } else { (math.equation(block: block, eqs), ) }
 }
 
 
@@ -164,6 +175,22 @@
   (elt.func())(..rows, ..fields)
 }
 
+/// Return equation separator
+#let _normalize-equation-sep(separator, separator-eq) = {
+  if separator-eq == auto {
+    if separator == "&" { align-point }
+    else if separator.len() == 1 { mathsymbol(separator) }
+    else { align-point }
+  } else {
+    // normalize
+    if isfunc(separator-eq, math.equation) {
+      separator-eq.body
+    } else {
+      separator-eq
+    }
+  }
+}
+
 
 /// Table which takes cell input row-by row
 ///
@@ -186,26 +213,58 @@
 ///   mandatory.
 /// - separator (str): configurable cell separator in a row. Good choices are `&`, `,`, or `;`.
 ///   Escape the separator using e.g. `[\&]`
+/// - separator-eq (none, auto, equation): cell separator for equations, must be single symbol.
+///   By default depends on `separator` if possible otherwise falls back to `$&$`.
+///   Set to `{none}` to disable splitting equations.
 /// - row-filler (any): value used to fill rows that are too short
 /// - table (function): Table function to use to build the final table. Intended for use with
 ///   table wrappers from other packages. (The function `{arguments}` can be used for
 ///   argument pass-through.)
-#let rowtable(..args, separator: "&", row-filler: none, table: std.table) = {
+#let rowtable(..args, separator: "&", separator-eq: auto, row-filler: none, table: std.table) = {
+  // type check parameters
+  assert(type(separator) == str, message: "Separator must be string")
+  assert(
+    separator-eq == none or
+    separator-eq == auto or
+    type(separator-eq) == content and isfuncv(separator-eq, math.equation, align-point, mathsymbol),
+    message: "separator-eq must be none, auto, & or math symbol")
   // processed positional arguments
   // dictionary with either of these:
   //  (row: array, wrap: function?)
   //  (posarg: any)
   let procarg = ()
 
-  for arg in args.pos() {
+  /// Create a row from content ([] or $$ argument)
+  /// return row as array or none
+  /// - arg (any):
+  /// -> (array, none)
+  let maybe-makerow(arg) = {
     if isfunc(arg, sequence) or isfunc(arg, text) or is-expandcell(arg) {
-      procarg.push((row: row-split(arg, sep: separator)))
-    } else if isfuncv(arg, std.table.header, std.table.footer) and arg.children.len() == 1 {
-      let body = arg.children.at(0).body
-      procarg.push((row: row-split(body, sep: separator), wrap: _headfootwrap(arg)))
-    } else {
-      procarg.push((posarg: arg))
+      row-split(arg, sep: separator)
+    } else if isfunc(arg, math.equation) and separator-eq != none {
+      let separator-eq = _normalize-equation-sep(separator, separator-eq)
+      _as-equations(row-split(arg.body, sep: separator-eq), block: arg.block)
     }
+  }
+
+  for arg in args.pos() {
+    // regular row
+    let row = maybe-makerow(arg)
+    if row != none {
+      procarg.push((row: row))
+      continue
+    }
+    // row inside header/footer
+    if isfuncv(arg, std.table.header, std.table.footer) and arg.children.len() == 1 {
+      let body = arg.children.at(0).body
+      let row = maybe-makerow(body)
+      if row != none {
+        procarg.push((row: row, wrap: _headfootwrap(arg)))
+        continue
+      }
+    }
+    // other arguments
+    procarg.push((posarg: arg))
   }
 
   let columns-arg = args.at("columns", default: 0)
