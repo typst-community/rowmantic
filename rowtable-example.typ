@@ -1,7 +1,7 @@
 // Copyright 2025 Ulrik Sverdrup "bluss" and rowmantic contributors.
 // Distributed under the terms of the EUPL v1.2 or any later version.
 
-#import "src/lib.typ": rowtable, expandcell
+#import "src/lib.typ" as self: rowtable, expandcell 
 
 #let template = body => {
   set document(date: none, title: "rowmantic - examples")
@@ -130,10 +130,10 @@ Example from Wikipedia#footnote[https://en.wikipedia.org/wiki/Interlinear_gloss]
     [Nested table \ ]
     table(columns: 2, [A], [B])
     [&]
-    table.cell(stroke: 1pt + red)[`table.cell`]
+    table.cell(stroke: 1pt + red, rowspan: 2)[`table.cell(` \ `rowspan: 2)`]
   },
-  [#table.cell(fill: yellow.lighten(90%), colspan: 2)[Cell with colspan=2] &#none],
-  [#expandcell(fill: yellow.lighten(90%))[Expandcell] & #expandcell[the rest]],
+  [#table.cell(fill: yellow.lighten(90%), colspan: 2)[Cell with colspan=2] ],
+  [#expandcell(fill: yellow.lighten(90%))[Expandcell] & #expandcell[#none]],
   table.footer([]),
 )
 ```)
@@ -275,5 +275,42 @@ Use a different separator than `&` to use equations with alignment.
     "(1st)" y_1 &= a_11 x_1 &+ a_12 x_2 \
     "(2nd)" y_2 &= a_21 x_1 &+ a_22 x_2 \
   $
+)
+```)
+
+
+== Table Cells, `rowspan` and `colspan`
+
+- `colspan`: a cell spans multiple columns
+- `rowspan`: a cell spans multiple rows
+
+Table cells can be customized with the usual properties (`stroke`, `fill`, et.c.) but also with colspan and rowspan. It's important to include the cells inline inside the rows, i.e like this:
+
+#show-example(```typst
+#let cell = table.cell
+#rowtable(
+  separator: ",",
+  columns: (3em, ) * 4,
+  [1, 2, 3,     #cell(fill: yellow)[4]],
+  [A, B, #cell(colspan: 2, stroke: 2pt)[Extra Wide]],
+)
+```)
+
+where ```typst [...]``` is the markup for the whole row. Then automatic row length computations will continue to work correctly.
+
+The column span is straightforward, because it's contained in the row, so support for this
+was available from `rowmantic`'s first version.
+
+However, there is also support for `rowspan` since version 0.2.0:
+
+#show-example(```typst
+#show table.cell: it => if it.colspan + it.rowspan > 2 { strong(it) } else { it }
+#let cell = table.cell
+#rowtable(
+  separator: ",",
+  [#cell(rowspan: 2, colspan: 2)[Square], 1, 2, #cell(rowspan: 3)[3], 4],
+  [#expandcell[Expand], #cell(rowspan: 3)[D]],
+  [e, f, g, h],
+  [#expandcell[Expandcell], ijk],
 )
 ```)
