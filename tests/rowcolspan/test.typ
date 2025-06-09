@@ -13,6 +13,8 @@
 
 #rowtable(
   separator: ",",
+  column-width: (3em, ) * 4 + (2em, ), rows: 3em,
+  inset: 0.25em,
   [#cell(rowspan: 2, colspan: 2)[Square], 1, 2, #cell(rowspan: 3)[3], 4],
   [#expandcell[Expand], #cell(rowspan: 3)[D]],
   [e, f, g, h],

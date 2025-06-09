@@ -107,6 +107,9 @@ TBD
 ///   By default depends on `separator` if possible otherwise falls back to `$&$`.
 ///   Set to `{none}` to disable splitting equations.
 /// - row-filler (any): value used to fill rows that are too short
+/// - column-width (length, relative, array): set column width without specifying number of columns.
+///   A single length is repeated for all columns. An array of lengths is repeated by extending with
+///   the last item.
 /// - table (function): Table function to use to build the final table. Intended for use with
 ///   table wrappers from other packages. (The function `{arguments}` can be used for
 ///   argument pass-through.)

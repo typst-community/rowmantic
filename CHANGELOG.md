@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 - `rowtable` now splits equations as rows, using the default separator `&` (the alignment marker) as cell separator. New examples added for this. #6
 - `rowtable` parameter `separator-eq` to control the separator used for equations #6
 - `rowtable` now supports table cells with `rowspan` #7
+- `rowtable` parameter `column-width` allows configuring column widths without restricting column count #7
 
 ## [0.1.1] - 2025-06-03
 

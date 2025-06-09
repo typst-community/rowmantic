@@ -308,6 +308,8 @@ However, there is also support for `rowspan` since version 0.2.0:
 #let cell = table.cell
 #rowtable(
   separator: ",",
+  column-width: 3em, rows: 3em,
+  inset: 0.25em,
   [#cell(rowspan: 2, colspan: 2)[Square], 1, 2, #cell(rowspan: 3)[3], 4],
   [#expandcell[Expand], #cell(rowspan: 3)[D]],
   [e, f, g, h],
