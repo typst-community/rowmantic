@@ -1,6 +1,8 @@
 // Copyright 2025 Ulrik Sverdrup "bluss" and rowmantic contributors.
 // Distributed under the terms of the EUPL v1.2 or any later version.
 
+/// rowtable module
+
 
 #let sequence = [].func()
 #let space = [ ].func()
@@ -12,8 +14,8 @@
 ///
 /// - array (array): array of content
 /// - reverse (bool): look from the end of strings. The array is still processed front-to-back (because it's convenient that way)
-// Inefficient but gets the job done.
 #let _trim(array, reverse: false) = {
+// Inefficient but gets the job done.
   let done = false
   for elt in array {
     if done {
@@ -207,7 +209,7 @@
 }
 
 
-/// Table which takes cell input row-by row
+/// Table which takes table cell inputs in rows.
 ///
 /// Each row is passed as one markup block (`{[...]}` syntax) which is split internally on
 /// the separator. Rows that are shorter than the longest row (or the configured `columns`)
@@ -227,7 +229,7 @@
 ///
 /// It is supported to input rows inside `table.header` and `table.footer`.
 ///
-/// - args (arguments): Rows like `{[A & B & C]}` and other positional or named table function parameters.
+/// - ..args (arguments): Rows like ` [A & B & C] ` and other positional or named table function parameters.
 ///   Arguments to `table` pass through. A `columns` argument to the table is possible but not
 ///   mandatory.
 /// - separator (str): configurable cell separator in a row. Good choices are `&`, `,`, or `;`.
@@ -360,10 +362,10 @@
   )
 }
 
-/// An expandcell is a `table.cell` that expands its colspan to available width
+/// An expandcell is a `table.cell` that expands its colspan to available width.
 /// The expandcell can be passed alone as a row, or should be placed inside a row markup block.
 ///
-/// - args (arguments): `{table.cell}` arguments. colspan and rowspan are not permitted.
+/// - ..args (arguments): `table.cell` arguments. colspan and rowspan are not permitted.
 /// - body (content): cell body
 #let expandcell(..args, body) = {
   assert("colspan" not in args.named())

@@ -6,8 +6,9 @@ export TYPST_ROOT := root
 default:
   @just --list --unsorted
 
-# generate manual (TODO)
+# generate manual
 doc:
+    typst compile docs/rowmantic-manual.typ
 
 # generate pictures for readme
 readme:
@@ -52,9 +53,6 @@ uninstall-preview: (remove "@preview")
 
 # run ci suite
 ci: test doc
-
-examples:
-	typst compile *-example.typ
 
 # run tt in docker
 ttd *args: (package ".typdockerpkg/preview") && (remove ".typdockerpkg/preview")

@@ -1,11 +1,25 @@
-# `rowmantic`: Tables row by row
-A Typst package for editing tables row-by-row.
+# `rowmantic`
+**A Typst package for row-wise table editing**
 
 The idea is a row-oriented way to input tables, with just a little less syntactical overhead than the usual `table` function in Typst.
 
-The `rowtable` function works like the usual `table` function but takes one markup block (`[...]`) per row, and the markup is split internally on a delimiter which is `&` by default.
+The `rowtable` function takes a markup block `[...]` per row, and the markup is split internally on a delimiter which is `&` by default. In all other aspects it works like the usual `table` function, with `stroke`, `fill`, `hline` and so on.
 
-For example, given typst `[A & B & C]`, the effective table row is `..([A], [B], [C])`.
+For example, the following
+
+```typc
+rowtable(
+  [A & B],
+  [C & D & E])
+```
+
+is equivalent to this `table`:
+
+```typc
+table(columns: 3,
+  [A], [B], [],
+  [C], [D], [E])
+```
 
 For improved table ergonomics, the table sizes the number of columns by the longest row. All rows are effectively completed so that they are of full length. This creates a better the editing experience, as rows can be filled out gradually.
 
@@ -72,76 +86,9 @@ This example [taken from Wikipedia](https://en.wikipedia.org/wiki/Interlinear_gl
 TBD
 -->
 
-## Function Documentation
+## Function Documentation and Manual
 
-
-### `rowtable`
-
-```typ
-/// Table which takes cell input row-by row
-///
-/// Each row is passed as one markup block (`{[...]}` syntax) which is split internally on
-/// the separator. Rows that are shorter than the longest row (or the configured `columns`)
-/// will be filled to be the same length as all other rows.
-///
-/// Rows can also be passed as equations (`$...$`) and they are then split into cells
-/// by `separator-eq`.
-///
-/// Leading/trailing spaces are removed from each table element in a row.
-/// To preserve such spaces, use `~`.
-///
-/// This function wraps the standard `table` function and passes through all its regular arguments.
-///
-/// Passing `{table.cell}` outside rows is possible but not recommended. Passing `[#table.cell[]]`
-/// inside a row, between separators, is supported and can be used with `colspan` >= 1 and/or
-/// `rowspan >= 1`. Successive rows will take rowspans into account when computing their length.
-///
-/// It is supported to input rows inside `table.header` and `table.footer`.
-///
-/// - args (arguments): Rows like `{[A & B & C]}` and other positional or named table function parameters.
-///   Arguments to `table` pass through. A `columns` argument to the table is possible but not
-///   mandatory.
-/// - separator (str): configurable cell separator in a row. Good choices are `&`, `,`, or `;`.
-///   Escape the separator using e.g. `[\&]`
-/// - separator-eq (none, auto, equation): cell separator for equations, must be single symbol.
-///   By default depends on `separator` if possible otherwise falls back to `$&$`.
-///   Set to `{none}` to disable splitting equations.
-/// - row-filler (any): value used to fill rows that are too short
-/// - column-width (length, relative, array): set column width without specifying number of columns.
-///   A single length is repeated for all columns. An array of lengths is repeated by extending with
-///   the last item.
-/// - table (function): Table function to use to build the final table. Intended for use with
-///   table wrappers from other packages. (The function `{arguments}` can be used for
-///   argument pass-through.)
-#let rowtable(..args, separator: "&", separator-eq: auto, row-filler: none, table: std.table) = { [...] }
-```
-
-### `expandcell`
-
-```typ
-/// An expandcell is a `table.cell` that expands its colspan to available width
-/// The expandcell can be passed alone as a row, or should be placed inside a row markup block.
-///
-/// - args (arguments): table.cell arguments. colspan and rowspan are not permitted.
-/// - body (content): cell body
-#let expandcell(..args, body) = { [...] }
-
-```
-
-### `row-split`
-
-```typ
-/// Take a sequence (content) and split it into an array by the given separator.
-/// It's split only shallowly, not deeply; the separators must exist in the uppermost sequence's
-/// content.
-///
-/// - it (content): text or sequence or other content
-/// - sep (str): separator
-/// - strip-space (bool): Remove leading/trailing spaces from split sequences
-/// -> array
-#let row-split(it, sep: "&", strip-space: true) = { [...] }
-```
-
+Please <a href="docs/rowmantic-manual.pdf">see the manual</a> for function documentation and more examples.
 
 ## License
 
