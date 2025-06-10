@@ -12,7 +12,7 @@
   set page(numbering: "1")
   set text(font: "Atkinson Hyperlegible Next")
   set text(slashed-zero: true)  // affects only fira code
-  show raw: set text(font: "Fira Code", ligatures: false, features: (calt: 0))
+  show raw: set text(font: "Fira Code", ligatures: false, features: (calt: 0), weight: "medium")
   show raw.where(block: true): set block(stroke: 0.5pt + gray, outset: (x: 0.6em, y: 0.5em))
   show raw.where(block: true): set block(width: 95%)
   set heading(numbering: "1.1")
