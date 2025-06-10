@@ -1,15 +1,11 @@
-#import "/src/lib.typ": rowtable
+#import "/tests/evalex.typ": eval-examples
 
 #set page(width: auto, height: auto, margin: (x: 0.2cm, y: 0.5cm))
 #set text(font: "Atkinson Hyperlegible Next")
-
 #let clr = if "dark" in sys.inputs { white } else { black }
 #set page(fill: white) if clr == black
 #set page(fill: none) if clr != black
 #set text(fill: clr)
+#set table(stroke: clr)
 
-#rowtable(
-  stroke: 0.5pt + clr,
-  [Input tables & row     & by      & row       ],
-  [Otherwise    & same as & regular & `#table`  ],
-)
+#eval-examples("/README.md", importedit: true, number: 1)

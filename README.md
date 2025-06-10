@@ -53,10 +53,10 @@ For improved table ergonomics, the table sizes the number of columns by the long
     inset: (x: 0em),
     column-gutter: 0.9em,
     // rows are filled to be equal length after collecting cells
-    [goá   , iáu-boē    , koat-tēng   , tang-sî   , boeh  , tńg-khì    ],
-    [goa1  , iau1-boe3  , koat2-teng3 , tang7-si5 , boeh2 , tng1-khi3  ],
-    [goa2  , iau2-boe7  , koat4-teng7 , tang1-si5 , boeh4 , tng2-khi3  ],
-    [I     , not-yet    , decide      , when      , want  , return.    ],
+    [goá,   iáu-boē,    koat-tēng,    tang-sî,    boeh,   tńg-khì   ],
+    [goa1,  iau1-boe3,  koat2-teng3,  tang7-si5,  boeh2,  tng1-khi3 ],
+    [goa2,  iau2-boe7,  koat4-teng7,  tang1-si5,  boeh4,  tng2-khi3 ],
+    [I,     not-yet,    decide,       when,       want,   return.   ],
     table.hline(),
     // cell that fills remainder of row
     expandcell["I have not yet decided when I shall return."],

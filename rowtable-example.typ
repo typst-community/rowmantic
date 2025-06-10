@@ -54,12 +54,13 @@ For improved table ergonomics, the table sizes the number of columns by the long
 
 #show-example(```typst
 #{
+  set table.hline(stroke: 0.08em)
   show regex("\d"): super.with(size: 0.8em, typographic: false)
   show table.cell: it => { set text(size: 0.9em) if it.y >= 1; it }
   show table.cell.where(y: 0): emph
   rowtable(
     separator: ",",   // configurable separator
-    stroke: none,     // pass through table arguments, hlines, cells et.c.
+    stroke: 0pt,      // pass through table arguments, hlines, cells et.c.
     inset: (x: 0em),
     column-gutter: 0.9em,
     // rows are filled to be equal length after collecting cells
