@@ -1,6 +1,7 @@
 root := justfile_directory()
 
 export TYPST_ROOT := root
+export TYPST_FONT_PATHS := root + "/docs/fonts"
 
 [private]
 default:
@@ -8,7 +9,7 @@ default:
 
 # generate manual
 doc:
-    typst compile docs/rowmantic-manual.typ
+    typst compile docs/rowmantic-manual.typ --ignore-system-fonts
 
 # generate pictures for readme
 readme:
@@ -56,5 +57,5 @@ ci: test doc
 
 # run tt in docker
 ttd *args: (package ".typdockerpkg/preview") && (remove ".typdockerpkg/preview")
-    docker run -e TYPST_PACKAGE_PATH=/data/.typdockerpkg/ --rm -it -v $PWD:/data ghcr.io/tingerrr/tytanic:v0.2.2 --root data {{args}}
+    docker run -e TYPST_PACKAGE_PATH=/data/.typdockerpkg/ --rm -it -v $PWD:/data ghcr.io/tingerrr/tytanic:v0.2.2 --root data --font-path docs/fonts {{args}}
 
