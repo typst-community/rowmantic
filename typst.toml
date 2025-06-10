@@ -28,5 +28,4 @@ exclude = [
   ".github",
   "scripts",
   "tests",
-  "Justfile",
 ]
