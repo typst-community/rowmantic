@@ -1,17 +1,26 @@
 // Copyright 2025 Ulrik Sverdrup "bluss" and rowmantic contributors.
 // Distributed under the terms of the EUPL v1.2 or any later version.
 
-#import "src/lib.typ" as self: rowtable, expandcell 
+#import "../src/lib.typ" as self: rowtable, expandcell
+#import "@preview/tidy:0.4.3"
 
+#let subtitletext = [A Typst package for row-wise table editing]
+#let pkgdata = toml("../typst.toml")
 #let template = body => {
-  set document(date: none, title: "rowmantic - examples")
+  set document(date: none,
+    title: [rowmantic #pkgdata.package.version - Manual - #subtitletext])
   set page(numbering: "1")
   set text(font: "Atkinson Hyperlegible Next")
+  set text(slashed-zero: true)  // affects only fira code
   show raw: set text(font: "Fira Code", ligatures: false, features: (calt: 0))
   show raw.where(block: true): set block(stroke: 0.5pt + gray, outset: (x: 0.6em, y: 0.5em))
   show raw.where(block: true): set block(width: 95%)
+  set heading(numbering: "1.1")
+  show heading: set block(below: 1.0em)
+  show outline.entry.where(level: 1): set block(above: 0.9em)
   body
 }
+
 #show: template
 
 #let show-example(code, functions: none, columns: 1, small: false, breakable: false) = {
@@ -33,34 +42,75 @@
     code,
   )
 }
+#let title = body => block(text(size: 3em, strong(body)), below: 0.7em)
+#let subtitle = body => text(size: 1.5em, body)
 
-= `rowmantic`: Tables row by row
-A Typst package for editing tables row-by-row.
+#title[rowmantic]
+#subtitle[#subtitletext]
 
+#{
+  let data = pkgdata.package
+  show table.cell.where(x: 0): strong
+  show link: underline
+  show link: set text(fill: blue.darken(60%))
+  rowtable(
+    stroke: 0pt,
+    inset: (left: 0em, right: 1em),
+    [version        & #data.version],
+    [import as      & #raw(("#import \"@preview", "/", data.name, ":", data.version, "\"").join())],
+    [typst universe & #link("https://typst.app/universe/package/" + data.name)],
+    [repository     & #link(data.repository)],
+  )
+}
+
+= Introduction
 The idea is a row-oriented way to input tables, with just a little less syntactical overhead than the usual `table` function in Typst.
 
-The `rowtable` function works like the usual `table` function but takes one markup block (`[...]`) per row, and the markup is split internally#footnote[But shallowly - not looking into styled or nested content] on a delimiter which is `&` by default.
+The `rowtable` function takes a markup block `[...]` per row, and the markup is split internally#footnote[But shallowly - not looking into styled or nested content] on a delimiter which is `&` by default. In all other aspects it works like the usual `table` function, with `stroke`, `fill`, `hline` and so on.
 
-#rowtable(
-  separator: "&",
-  stroke: none,
-  [Input:                     & ```typst [A & B & C]```       ],
-  [Table cells (effectively): & ```typst ..([A], [B], [C])``` ],
-)
+#{
+  show raw: set block(stroke: none, width: auto)
+  rowtable(
+    separator: "&",
+    stroke: none,
+    inset: (x: 2em),
+    [Input: &
+      ```typc
+      rowtable(
+        [A & B],
+        [C & D & E])
+      ```
+      &
+      #rowtable([A & B], [C & D & E])
+    ],
+    [Equivalent \ table: &
+      ```typc
+      table(columns: 3,
+        [A], [B], [],
+        [C], [D], [E])
+      ```
+    ],
+  )
+}
 
 For improved table ergonomics, the table sizes the number of columns by the longest row. All rows are effectively completed so that they are of full length. This creates a better the editing experience, as rows can be filled out gradually.
 
-== Examples
+#outline()
+
+#pagebreak(weak: true)
+
+= Examples
+
+== Introductory Examples
 
 #show-example(```typst
 #{
-  set table.hline(stroke: 0.08em)
   show regex("\d"): super.with(size: 0.8em, typographic: false)
   show table.cell: it => { set text(size: 0.9em) if it.y >= 1; it }
   show table.cell.where(y: 0): emph
   rowtable(
     separator: ",",   // configurable separator
-    stroke: 0pt,      // pass through table arguments, hlines, cells et.c.
+    stroke: none,     // pass through table arguments, hlines, cells et.c.
     inset: (x: 0em),
     column-gutter: 0.9em,
     // rows are filled to be equal length after collecting cells
@@ -94,7 +144,7 @@ Example from Wikipedia#footnote[https://en.wikipedia.org/wiki/Interlinear_gloss]
 }
 ```)
 
-== Trying some more difficult examples
+== Difficult Examples
 
 #show-example(small: true, ```typst
 #rowtable(
@@ -151,7 +201,7 @@ Example from Wikipedia#footnote[https://en.wikipedia.org/wiki/Interlinear_gloss]
 ```)
 
 
-== Combine with pillar (or other table function)
+== Using other Table Functions
 
 Use the `table` argument to let rowtable pass its result to a different table function rather than the standard one, for example `pillar.table` (shown below) or `zero.ztable`.
 
@@ -245,7 +295,7 @@ example, the colorful annotations add the most of the complexity. `rowtable` con
   $rm x^3   & x^2$,
 
   $         &-x^2       &  x$,
-  $         & rm -x^2 & -x$,
+  $         & rm -x^2   & -x$,
 
   $         &           &   2x  & 1$,
   $         &           &rm 2x  & 2$,
@@ -312,9 +362,37 @@ However, there is also support for `rowspan` since version 0.2.0:
   separator: ",",
   column-width: 3em, rows: 3em,
   inset: 0.25em,
-  [#cell(rowspan: 2, colspan: 2)[C: 2, R: 2], 1, 2, #cell(rowspan: 3)[R: 3], 4],
+  [#cell(rowspan: 2, colspan: 2)[R: 2, C: 2], 1, 2, #cell(rowspan: 3)[R: 3], 4],
   [#expandcell[Expandcell], #cell(rowspan: 3)[R: 3]],
   [e, f, g, h],
   [#expandcell[Expandcell], ijk],
 )
 ```)
+
+= Known Limitations
+
+#set list(marker: "‣")
+
+- Multi-row `table.header/footer` are not supported yet.
+- `rowspan` is not supported in cells in rows inside `table.header/footer`.
+- `expandcell` can collide with `rowspan`ned cells (if they are not placed along the left or right side of the table); use `colspan` as a workaround when necessary.
+- Table cells can be passed outside the rows, and this removes the usefulness of automatic column lengths. Avoid doing this.
+- `rowtable` does not properly support being used as a "front end" for `grid`.
+
+#pagebreak(weak: true)
+
+#show heading.where(level: 3): set heading(numbering: none, outlined: false)
+#show heading.where(level: 4): set heading(numbering: none, outlined: false)
+
+#{
+  let expose = ("rowtable", "row-split", "expandcell")
+  let mod = tidy.parse-module(read("/src/rowtable.typ"), name: "Function Reference", old-syntax: true)
+  mod.functions = mod.functions.filter(elt => elt.name in expose)
+  mod.variables = mod.variables.filter(elt => elt.name in expose)
+  tidy.show-module(mod, first-heading-level: 1, show-outline: false)
+}
+
+// Postscript
+#block(above: 2em, {
+  [API Documentation generated using `tidy`.]
+})

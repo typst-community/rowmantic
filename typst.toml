@@ -4,7 +4,7 @@ version = "0.2.0"
 entrypoint = "src/lib.typ"
 authors = ["Ulrik Sverdrup <ulrik.sverdrup@gmail.com>"]
 license = "EUPL-1.2"
-description = "Define tables row by row with inline separators between cells."
+description = "Define tables row-wise, with inline separators in the row between cells."
 repository = "https://github.com/typst-community/rowmantic"
 
 compiler = "0.13.0"
