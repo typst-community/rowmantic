@@ -290,7 +290,8 @@ Table cells can be customized with the usual properties (`stroke`, `fill`, et.c.
 #let cell = table.cell
 #rowtable(
   separator: ",",
-  columns: (3em, ) * 4,
+  column-width: 3em,
+  rows: 3em,
   [1, 2, 3,     #cell(fill: yellow)[4]],
   [A, B, #cell(colspan: 2, stroke: 2pt)[Extra Wide]],
 )
