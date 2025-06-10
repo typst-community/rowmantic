@@ -176,7 +176,7 @@ Use the `table` argument to let rowtable pass its result to a different table fu
 
 == Equations
 
-Equations as rows are are split on `&` by default. Other symbols are possible. Note that `&` can be escaped in equations, but other separator symbols are not as easy to escape #footnote[The escape for `&` is just `\&`, for other separators like for example the comma use a `box` to escape them in an equation.].
+Equations as rows are are split on `&` by default, but it is configurable. Note that `&` can be escaped in equations, but other separator symbols are not as easy to escape #footnote[The escape for `&` is just `\&`, for other separators like for example the comma a `box` or `","` is used to escape them.].
 
 #show-example(```typst
 #rowtable(
@@ -311,8 +311,8 @@ However, there is also support for `rowspan` since version 0.2.0:
   separator: ",",
   column-width: 3em, rows: 3em,
   inset: 0.25em,
-  [#cell(rowspan: 2, colspan: 2)[Square], 1, 2, #cell(rowspan: 3)[3], 4],
-  [#expandcell[Expand], #cell(rowspan: 3)[D]],
+  [#cell(rowspan: 2, colspan: 2)[C: 2, R: 2], 1, 2, #cell(rowspan: 3)[R: 3], 4],
+  [#expandcell[Expandcell], #cell(rowspan: 3)[R: 3]],
   [e, f, g, h],
   [#expandcell[Expandcell], ijk],
 )
