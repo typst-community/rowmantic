@@ -43,7 +43,7 @@ jobs:
       - name: Run test suite
         run: |
           just install-preview
-          just test
+          just test --no-fail-fast
           just uninstall-preview
 
       - name: Archive test results
