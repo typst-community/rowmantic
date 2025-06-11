@@ -34,7 +34,7 @@ For improved table ergonomics, the table sizes the number of columns by the long
 </p>
 
 ```typ
-#import "@preview/rowmantic:0.2.1": rowtable
+#import "@preview/rowmantic:0.3.0": rowtable
 
 #rowtable(
   stroke: 0.5pt,
@@ -54,7 +54,7 @@ For improved table ergonomics, the table sizes the number of columns by the long
 </p>
 
 ```typ
-#import "@preview/rowmantic:0.2.1": rowtable, expandcell
+#import "@preview/rowmantic:0.3.0": rowtable, expandcell
 
 #{
   set table.hline(stroke: 0.08em)

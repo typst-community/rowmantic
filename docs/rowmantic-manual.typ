@@ -17,12 +17,14 @@
   show raw.where(block: true): set block(width: 95%)
   set heading(numbering: "1.1")
   show heading: set block(below: 1.0em)
+  show outline: set text(number-width: "tabular")
   show outline.entry.where(level: 1): set block(above: 0.9em)
   body
 }
 
 #show: template
 
+// #set text(features: (set ))
 #let show-example(code, scope: auto, columns: 1, small: false, breakable: false) = {
   show: block.with(breakable: breakable)
   let scope = if scope == auto { (
@@ -60,7 +62,7 @@
   rowtable(
     stroke: 0pt,
     inset: (left: 0em, right: 1em),
-    [version        & #data.version],
+    [version        & #raw(data.version)],
     [import as      & #raw(lang: "typst", ("#import \"@preview", "/", data.name, ":", data.version, "\"").join())],
     [typst universe & #link("https://typst.app/universe/package/" + data.name)],
     [repository     & #link(data.repository)],
