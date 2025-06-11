@@ -35,7 +35,7 @@
     // eval markdown input to typst raw block
     let rwb = eval(example.join("\n"), mode: "markup")
     let text = if importedit {
-      rwb.text.replace(regex("@preview/rowmantic:[^\\\"]+"), "/src/lib.typ")
+      rwb.text.replace(regex(`@preview/rowmantic:[^\"]+`.text), "/src/lib.typ")
     } else { rwb.text }
     // eval raw code to typst
     eval(text, mode: "markup")
