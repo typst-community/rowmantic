@@ -23,23 +23,27 @@
 
 #show: template
 
-#let show-example(code, functions: none, columns: 1, small: false, breakable: false) = {
+#let show-example(code, scope: auto, columns: 1, small: false, breakable: false) = {
   show: block.with(breakable: breakable)
-  let scope = (
+  let scope = if scope == auto { (
     rowtable: rowtable,
     expandcell: expandcell,
-  )
-  let evaluated = eval(code.text, mode: "markup", scope: scope + functions)
+  ) } else { scope }
+  let evaluated = eval(code.text, mode: "markup", scope: scope)
   set text(size: 0.9em) if small
   show raw: set text(size: 0.9em)
   table(
     columns: columns,
     stroke: none,
-    inset: (x: 0.5em, y: 0.5em),
-    emph[Document Result],
-    evaluated,
-    emph[Input],
-    code,
+    inset: (x: 0.0em, y: 0.5em),
+    {
+      block(sticky: true)[_Document Result_]
+      evaluated
+    },
+    {
+      block(sticky: true)[_Input_]
+      code
+    },
   )
 }
 #let title = body => block(text(size: 3em, strong(body)), below: 0.7em)
@@ -57,7 +61,7 @@
     stroke: 0pt,
     inset: (left: 0em, right: 1em),
     [version        & #data.version],
-    [import as      & #raw(("#import \"@preview", "/", data.name, ":", data.version, "\"").join())],
+    [import as      & #raw(lang: "typst", ("#import \"@preview", "/", data.name, ":", data.version, "\"").join())],
     [typst universe & #link("https://typst.app/universe/package/" + data.name)],
     [repository     & #link(data.repository)],
   )
@@ -81,7 +85,7 @@ The `rowtable` function takes a markup block `[...]` per row, and the markup is 
         [C & D & E])
       ```
       &
-      #rowtable([A & B], [C & D & E])
+      #table.cell(rowspan: 2, rowtable([A & B], [C & D & E]))
     ],
     [Equivalent \ table: &
       ```typc
@@ -103,7 +107,14 @@ For improved table ergonomics, the table sizes the number of columns by the long
 
 == Introductory Examples
 
-#show-example(```typst
+#show raw.where(block: true): it => {
+  show "\"/src/lib.typ\"": ("\"@preview/",
+    pkgdata.package.name, ":", pkgdata.package.version, "\"").join()
+  it
+}
+
+#show-example(scope: (:), ```typst
+#import "/src/lib.typ": rowtable, expandcell
 #{
   show regex("\d"): super.with(size: 0.8em, typographic: false)
   show table.cell: it => { set text(size: 0.9em) if it.y >= 1; it }
@@ -126,7 +137,8 @@ For improved table ergonomics, the table sizes the number of columns by the long
 ```)
 Example from Wikipedia#footnote[https://en.wikipedia.org/wiki/Interlinear_gloss]
 
-#show-example(```typst
+#show-example(scope: (:), ```typst
+#import "/src/lib.typ": rowtable
 #{
   set table(stroke: none, inset: 0.8em)
   set table.hline(stroke: 0.5pt)
