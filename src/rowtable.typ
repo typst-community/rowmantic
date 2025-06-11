@@ -123,13 +123,15 @@
   }
 }
 
+/// If the item is not already an array, wrap it in an array.
 #let asarray(elt) = if type(elt) == array { elt } else { (elt, ) }
+
 /// Take a sequence (content) and split it into an array by the given separator.
 /// It's split only shallowly, not deeply; the separators must exist in the uppermost sequence's
 /// content.
 ///
-/// - it (content): text or sequence or other content
-/// - sep (str): separator
+/// - it (content): Text or sequence or other content
+/// - sep (str): Separator
 /// - strip-space (bool): Remove leading/trailing spaces from split sequences
 /// -> array
 #let row-split(it, sep: "&", strip-space: true) = {
@@ -228,38 +230,38 @@
 
 /// Table which takes table cell inputs in rows.
 ///
-/// Each row is passed as one markup block (`{[...]}` syntax) which is split internally on
+/// Each row is passed as one markup block ```typc  [...] ``` which is split internally on
 /// the separator. Rows that are shorter than the longest row (or the configured `columns`)
 /// will be filled to be the same length as all other rows.
 ///
-/// Rows can also be passed as equations (`$...$`) and they are then split into cells
+/// Rows can also be passed as equations (```typc $...$```) and they are then split into cells
 /// by `separator-eq`.
 ///
-/// Leading/trailing spaces are removed from each table element in a row.
-/// To preserve such spaces, use `~`.
+/// Leading/trailing spaces are removed from each table element in rows.
+/// To preserve such spaces, use ```typst ~```.
 ///
 /// This function wraps the standard `table` function and passes through all its regular arguments.
 ///
-/// Passing `{table.cell}` outside rows is possible but not recommended. Passing `[#table.cell[]]`
+/// Passing ```typc table.cell``` outside rows is possible but not recommended. Passing ```typst #table.cell[]```
 /// inside a row, between separators, is supported and can be used with `colspan` >= 1 and/or
 /// `rowspan >= 1`. Successive rows will take rowspans into account when computing their length.
 ///
 /// It is supported to input rows inside `table.header` and `table.footer`.
 ///
-/// - ..args (arguments): Rows like ` [A & B & C] ` and other positional or named table function parameters.
+/// - ..args (arguments): Rows like ```typc [A & B & C]``` and other positional or named table function parameters.
 ///   Arguments to `table` pass through. A `columns` argument to the table is possible but not
 ///   mandatory.
-/// - separator (str): configurable cell separator in a row. Good choices are `&`, `,`, or `;`.
-///   Escape the separator using e.g. `[\&]`
-/// - separator-eq (none, auto, equation): cell separator for equations, must be single symbol.
-///   By default depends on `separator` if possible otherwise falls back to `$&$`.
-///   Set to `{none}` to disable splitting equations.
-/// - row-filler (any): value used to fill rows that are too short
-/// - column-width (length, relative, fraction, array): set column width without specifying number of columns.
+/// - separator (str): Configurable cell separator in rows. Good choices are `"&"`, `","` or `";"`.
+///   Escape the separator using e.g. ```typst \&```
+/// - separator-eq (none, auto, equation): Cell separator for equations, must be single symbol.
+///   By default depends on `separator` if possible otherwise falls back to ```typst $&$```.
+///   Set to ```typc none``` to disable splitting equations.
+/// - row-filler (none, content): Value used to fill rows that are too short.
+/// - column-width (length, relative, fraction, array): Set column width without specifying number of columns.
 ///   A single length is repeated for all columns. An array of lengths is repeated by extending with
 ///   the last item.
 /// - table (function): Table function to use to build the final table. Intended for use with
-///   table wrappers from other packages. (The function `{arguments}` can be used for
+///   table wrappers from other packages. (The function ```typst arguments``` can be used for
 ///   argument pass-through.)
 #let rowtable(..args, separator: "&", separator-eq: auto, row-filler: none, column-width: none, table: std.table) = {
   // type check parameters
@@ -379,11 +381,11 @@
   )
 }
 
-/// An expandcell is a `table.cell` that expands its colspan to available width.
-/// The expandcell can be passed alone as a row, or should be placed inside a row markup block.
+/// An expandcell is a `table.cell` that expands its `colspan` to available width.
+/// The expandcell can be passed alone as a whole row, or should be placed inside a row markup block to form part of a row.
 ///
-/// - ..args (arguments): `table.cell` arguments. colspan and rowspan are not permitted.
-/// - body (content): cell body
+/// - ..args (arguments): `table.cell` arguments, except `colspan` and `rowspan` which are not permitted.
+/// - body (content): Cell body
 #let expandcell(..args, body) = {
   assert("colspan" not in args.named())
   assert("rowspan" not in args.named())
