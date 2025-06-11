@@ -336,6 +336,64 @@ Use a different separator than `&` to use equations with alignment.
 ```)
 
 
+=== Sizing Delimiters in Annotated Matrix
+
+This example draws a matrix using `rowtable` and inserts iteratively sized
+delimiters in `rowspan` cells. Grid lines are drawn to show how the table is constructed.
+
+
+#show-example(breakable: true, ```typst
+/// Measure a table's size
+/// Successively remove display of each row
+///  (first full table, then remove 0, then remove 0 and 1, and so on).
+/// Returns an array of measurements which is a size profile of the array's rows
+/// (or columns if `attr: "x"`)
+#let measure-table(t, min: 0, max: 50, attr: "y") = {
+  let wh = (x: "width", y: "height").at(attr)
+  let result = ()
+  for i in range(max) {
+    let sz = measure({
+      show table.cell: it => {
+        if it.at(attr) < i { none } else { it }
+      }
+      t
+    })
+    result.push(sz)
+    if i > min and (sz.at(wh) == 0pt or result.at(-2, default: none) == sz) {
+      break
+    }
+  }
+  result
+}
+
+/// Create an element using `func`; then measure it using `measure-func`
+/// then create the final version of the element again using func, this
+/// time with the size info from the first try.
+#let measure-and-make(func, measure-func: measure-table) = context {
+  func(measure-func(func(none)))
+}
+
+#measure-and-make(sizeinfo => {
+  set text(size: 1.5em)
+  let nrows = 2
+  // use row height information from size profile with one row removed.
+  let row = if sizeinfo != none { sizeinfo.at(1).height / nrows } else { 1em }
+  let delimheight = row * 0.90 * nrows
+  let delim(p) = table.cell(rowspan: nrows, $lr(#p, size: #delimheight)$, inset: 0em)
+  let open = delim([\[])
+  let close = delim([\]])
+  rowtable(
+    stroke: 0.10pt + blue,
+    align: horizon,
+    inset: 0.4em,
+    $     &      & (k)     & (l) &&& $,
+    $ (a) & open & n       & sum_(i=1)^n x_i   & close & open & beta_0 & close $,
+    $ (b) &        sum_(i=1)^n x_i & sum_(i=1)^n x_i^2 &        beta_1 $,
+  )
+})
+```)
+
+#pagebreak(weak: true)
 == Table Cells, `rowspan` and `colspan`
 
 - `colspan`: a cell spans multiple columns
