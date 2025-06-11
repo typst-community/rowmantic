@@ -99,7 +99,7 @@ The `rowtable` function takes a markup block `[...]` per row, and the markup is 
 
 For improved table ergonomics, the table sizes the number of columns by the longest row. All rows are effectively completed so that they are of full length. This creates a better the editing experience, as rows can be filled out gradually.
 
-#outline()
+#outline(depth: 2)
 
 #pagebreak(weak: true)
 
@@ -156,50 +156,45 @@ Example from Wikipedia#footnote[https://en.wikipedia.org/wiki/Interlinear_gloss]
 }
 ```)
 
-== Difficult Examples
+#pagebreak(weak: true)
+== Escaping and Various Examples
 
-#show-example(small: true, ```typst
+#show-example(small: true, ````typst
 #rowtable(
   align: horizon,
-  stroke: 0.1pt,
+  column-width: 1fr,
   row-filler: [N/A],
-  [Literal \& & *Strong* & *X*--_Y_ ],
-  [Equation \ $pi = 3.1415...$ & $ integral_Omega d omega $  & $X \& Y$],
-  $ pi^1 & pi^2 & pi^3 $,
-  [
-    - A
-    - B
-    &
-    + A
-    + B
-    &
-    / A: a
-    / B: b
-  ],
+  stroke: (x, y) => { if x == 3 { (y: 0pt, right: 0pt) } else { (x: 0.5pt, y: 0.5pt) } },
+  [_Emphasis &_   & *Strong &*  & Literal \&  & Escape the separator with `\&`],
+  $ integral_(-oo)^oo f(x) thin d x   & integral_0^oo f(t) thin e^(-s t) thin d t
+    & X \& Y & "Display equations" \ "as a row" $,
   [
     #{
       set figure.caption(position: top)
       [#figure(rect[A], caption: "Top")<fig1>]
     }
     &
-    See @fig1 \& @fig2
+    See @fig1 \ \& @fig2
     &
     #figure(rect[B], caption: "Bot")<fig2>
+    &
+    ```typc set``` rules need to be enclosed so that they don't try
+    to style the separator itself.
   ],
-  {
-    [Nested rowtable \ ]
-    rowtable([A & B])
-    [&]
-    [Nested table \ ]
-    table(columns: 2, [A], [B])
-    [&]
-    table.cell(stroke: 1pt + red, rowspan: 2)[`table.cell(` \ `rowspan: 2)`]
-  },
-  [#table.cell(fill: yellow.lighten(90%), colspan: 2)[Cell with colspan=2] ],
-  [#expandcell(fill: yellow.lighten(90%))[Expandcell] & #expandcell[#none]],
-  table.footer([]),
+  [
+    + A
+    + B
+    &
+    / A: a
+    / B: b
+    & #rowtable([A & B])
+    & Lists and other larger elements can be embedded as usual.
+  ],
+  [ #table.cell(fill: yellow)[A]  & #table.cell(fill: orange)[B]  &
+    #table.cell(fill: red)[C]     & Colorfully filled cells ],
 )
-```)
+
+````)
 
 == Double semicolon separator
 
