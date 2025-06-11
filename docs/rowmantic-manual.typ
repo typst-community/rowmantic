@@ -256,14 +256,13 @@ computing the result $x^3 + x + 1 = (x^2 - x + 2)(x + 1) - 1$. For this
 example, the colorful annotations add the most of the complexity. `rowtable` contributes to the example by splitting equations on the separator and filling rows to be equal length.
 
 #show-example(breakable: true, ```typst
-#import "@preview/mannot:0.3.0": annot, markhl
+#import "@preview/mannot:0.3.0": annot, mark
 
 /// Set up strokes and gutter for long division table
 #let longdiv(..args, table: std.table) = {
   let cols = args.at("columns")
   let st = std.stroke(args.at("stroke", default: black))
   let stroke = (x, y) => (
-     // Add left stroke to the last column
     left: if x == cols - 1 and y == 1 { st },
     bottom: if (
       // Add top and bottom stroke to denominator cell
@@ -281,14 +280,14 @@ example, the colorful annotations add the most of the complexity. `rowtable` con
     std.table.hline(y: 1, stroke: st))
 }
 
-// Set up marking functions
-#let markhl = markhl.with(outset: (top: 0.15em, rest: 0.30em), radius: 1pt)
-#let um = math.class("unary", math.minus) // unary minus
-#let mkq = markhl.with(color: luma(70%))
-#let mkn = markhl.with()
-#let mkdenom = markhl.with(color: blue, tag: <denom>)
-#let mkrem = markhl.with(color: red, tag: <rem>)
+// Set up marking functions and table cell backgrounds
+#let mark = mark.with(outset: (top: 0em, rest: 0.50em))
+#let mkq(..args) = table.cell(fill: luma(70%), mark(..args))
+#let mkn(..args) = table.cell(fill: orange.lighten(50%), mark(..args))
+#let mkdenom(it) = table.cell(fill: blue.lighten(70%), mark(tag: <denom>, it))
+#let mkrem(it)   = table.cell(fill: red.lighten(50%), mark(tag: <rem>, it))
 
+#let um = math.class("unary", math.minus) // unary minus
 #let leftset(x) = box(place(dx: -0.3em, right + bottom, $#x$))
 #let rm = math.class("unary", leftset($(-)$)) // row minus
 
@@ -298,7 +297,7 @@ example, the colorful annotations add the most of the complexity. `rowtable` con
   table: longdiv.with(stroke: 1.5pt),
   inset: 0.55em,
   $mkq(x^2, tag: #<ans>)& mkq(um x) & mkq(2)    &$,
-  $mkn(x^3) &           & mkn(x)    & mkn(1, tag: #<num>) & mkdenom(x + 1)$,
+  $mkn(x^3) & mkn(.)    & mkn(x)    & mkn(1, tag: #<num>) & mkdenom(x + 1)$,
   $rm x^3   & x^2$,
 
   $         &-x^2       &  x$,
@@ -310,8 +309,8 @@ example, the colorful annotations add the most of the complexity. `rowtable` con
   $         &           &       & mkrem(um 1)$,
 )
 #annot(<ans>, pos: left + horizon, dx: -2em, dy: -0em, annot-text-props: (fill: black, size: 0.75em))[Quotient]
-#annot(<denom>, pos: right + bottom, dy: +2em)[Denominator]
-#annot(<num>, pos: right + top, dy: -1.5em, dx: 1em)[Numerator]
+#annot(<denom>, pos: right + bottom, dy: 1.5em, dx: -1.0em)[Denominator]
+#annot(<num>, pos: right + top, dy: -2.0em, dx: 1.5em)[Numerator]
 #annot(<rem>, pos: right + horizon, dy: 0em, dx: 2em)[Remainder]
 ```)
 
