@@ -460,7 +460,10 @@ delimiters in `rowspan` cells. Grid lines are drawn to show how the table is con
   let mod = tidy.parse-module(read("/src/rowtable.typ"), name: "Function Reference", old-syntax: true)
   mod.functions = mod.functions.filter(elt => elt.name in expose)
   mod.variables = mod.variables.filter(elt => elt.name in expose)
-  tidy.show-module(mod, first-heading-level: 1, show-outline: false)
+  // put rowtable first since it's the single prominent function
+  let isrt = elt => elt.name == "rowtable"
+  mod.functions = mod.functions.filter(isrt) + mod.functions.filter(elt => not isrt(elt))
+  tidy.show-module(mod, first-heading-level: 1, show-outline: false, sort-functions: false)
 }
 
 // Postscript
