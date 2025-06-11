@@ -231,7 +231,46 @@ Use the `table` argument to let rowtable pass its result to a different table fu
 ```)
 
 #pagebreak(weak: true)
+== Table Cells, `rowspan` and `colspan`
 
+- `colspan`: a cell spans multiple columns
+- `rowspan`: a cell spans multiple rows
+
+Table cells can be customized with the usual properties (`stroke`, `fill`, et.c.) but also with colspan and rowspan. It's important to include the cells inline inside the rows, i.e like this:
+
+#show-example(```typst
+#let cell = table.cell
+#rowtable(
+  separator: ",",
+  column-width: 3em,
+  rows: 3em,
+  [1, 2, 3,     #cell(fill: yellow)[4]],
+  [A, B, #cell(colspan: 2, stroke: 2pt)[Extra Wide]],
+)
+```)
+
+where ```typst [...]``` is the markup for the whole row. Then automatic row length computations will continue to work correctly.
+
+The column span is straightforward, because it's contained in the row, so support for this
+was available from `rowmantic`'s first version.
+
+However, there is also support for `rowspan` since version 0.2.0:
+
+#show-example(```typst
+#show table.cell: it => if it.colspan + it.rowspan > 2 { strong(it) } else { it }
+#let cell = table.cell
+#rowtable(
+  separator: ",",
+  column-width: 3em, rows: 3em,
+  inset: 0.25em,
+  [#cell(rowspan: 2, colspan: 2)[Rs2, Cs2], 1, 2, #cell(rowspan: 3)[Rs3], 4],
+  [#expandcell[Expandcell], #cell(rowspan: 3)[Rs3]],
+  [e, f, g, h],
+  [#expandcell[Expandcell], ijk],
+)
+```)
+
+#pagebreak(weak: true)
 == Equations
 
 Equations as rows are are split on `&` by default, but it is configurable. Note that `&` can be escaped in equations, but other separator symbols are not as easy to escape #footnote[The escape for `&` is just `\&`, for other separators like for example the comma a `box` or `","` is used to escape them.].
@@ -393,45 +432,6 @@ delimiters in `rowspan` cells. Grid lines are drawn to show how the table is con
 })
 ```)
 
-#pagebreak(weak: true)
-== Table Cells, `rowspan` and `colspan`
-
-- `colspan`: a cell spans multiple columns
-- `rowspan`: a cell spans multiple rows
-
-Table cells can be customized with the usual properties (`stroke`, `fill`, et.c.) but also with colspan and rowspan. It's important to include the cells inline inside the rows, i.e like this:
-
-#show-example(```typst
-#let cell = table.cell
-#rowtable(
-  separator: ",",
-  column-width: 3em,
-  rows: 3em,
-  [1, 2, 3,     #cell(fill: yellow)[4]],
-  [A, B, #cell(colspan: 2, stroke: 2pt)[Extra Wide]],
-)
-```)
-
-where ```typst [...]``` is the markup for the whole row. Then automatic row length computations will continue to work correctly.
-
-The column span is straightforward, because it's contained in the row, so support for this
-was available from `rowmantic`'s first version.
-
-However, there is also support for `rowspan` since version 0.2.0:
-
-#show-example(```typst
-#show table.cell: it => if it.colspan + it.rowspan > 2 { strong(it) } else { it }
-#let cell = table.cell
-#rowtable(
-  separator: ",",
-  column-width: 3em, rows: 3em,
-  inset: 0.25em,
-  [#cell(rowspan: 2, colspan: 2)[R: 2, C: 2], 1, 2, #cell(rowspan: 3)[R: 3], 4],
-  [#expandcell[Expandcell], #cell(rowspan: 3)[R: 3]],
-  [e, f, g, h],
-  [#expandcell[Expandcell], ijk],
-)
-```)
 
 = Known Limitations
 
