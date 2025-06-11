@@ -20,3 +20,12 @@
   [e, f, g, h],
   [#expandcell[Expandcell], rest],
 )
+
+#rowtable(
+  align: horizon,
+  column-width: 2em,
+  rows: 2em,
+  $ cell(rowspan: #2, pi^1) & cell(colspan: #2, pi^2) $,
+  $ pi^3 & pi^4 $,
+  $ alpha_1 & alpha_2 & alpha_3 $,
+)

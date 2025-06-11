@@ -136,8 +136,25 @@
   asarray(_row-split(it, sep: sep, strip-space: strip-space)).map(_lift-singles)
 }
 
+/// Turn content item into equation
+/// For `table.cell(body)` we produce `table.cell(math.equation(body))`,
+/// For `body` we produce `math.equation(body)`
+#let _as-equation(elt, block: false) = {
+  // if we get a table cell here, we need to invert the order
+  // so that the cell is the outermost layer
+  if isfunc(elt, table.cell) {
+    let fields = elt.fields()
+    let body = fields.remove("body")
+    elt.func()(..fields, _as-equation(body, block: block))
+  } else {
+    math.equation(block: block, elt)
+  }
+}
+
+/// Turn array of content into array of equations
 #let _as-equations(eqs, block: false) = {
-  if type(eqs) == array { eqs.map(math.equation.with(block: block)) } else { (math.equation(block: block, eqs), ) }
+  let mapper = _as-equation.with(block: block)
+  if type(eqs) == array { eqs.map(mapper) } else { (mapper(eqs), ) }
 }
 
 
