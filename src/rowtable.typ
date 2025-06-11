@@ -154,6 +154,8 @@
 }
 
 /// Turn array of content into array of equations
+/// - eqs (array, equation):
+/// -> array
 #let _as-equations(eqs, block: false) = {
   let mapper = _as-equation.with(block: block)
   if type(eqs) == array { eqs.map(mapper) } else { (mapper(eqs), ) }
@@ -263,6 +265,7 @@
 /// - table (function): Table function to use to build the final table. Intended for use with
 ///   table wrappers from other packages. (The function ```typst arguments``` can be used for
 ///   argument pass-through.)
+/// -> table, content
 #let rowtable(..args, separator: "&", separator-eq: auto, row-filler: none, column-width: none, table: std.table) = {
   // type check parameters
   assert(type(separator) == str, message: "Separator must be string")
@@ -280,7 +283,7 @@
   /// Create a row from content ([] or $$ argument)
   /// return row as array or none
   /// - arg (any):
-  /// -> (array, none)
+  /// -> array, none
   let maybe-makerow(arg) = {
     if isfunc(arg, sequence) or isfunc(arg, text) or is-expandcell(arg) {
       row-split(arg, sep: separator)
@@ -386,6 +389,7 @@
 ///
 /// - ..args (arguments): `table.cell` arguments, except `colspan` and `rowspan` which are not permitted.
 /// - body (content): Cell body
+/// -> content
 #let expandcell(..args, body) = {
   assert("colspan" not in args.named())
   assert("rowspan" not in args.named())
