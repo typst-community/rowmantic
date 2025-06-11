@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.1] - Unreleased
+
+### Added
+
+- New manual with examples and generated function documentation
+- Embedded `table.cell`s now supported in equation rows
+
+### Fixed
+
+- `column-width` now also accepts a single fraction, i.e. `1fr`, as value
+
 ## [0.2.0] - 2025-06-09
 
 ### Added
@@ -36,6 +47,7 @@ Initial release
 
 <!-- versions are final when published on typst universe -->
 [Unreleased]: https://github.com/typst-community/rowmantic/compare/v0.1.0...HEAD
+[0.2.1]: https://github.com/typst-community/rowmantic/releases/tag/v0.2.1
 [0.2.0]: https://github.com/typst-community/rowmantic/releases/tag/v0.2.0
 [0.1.1]: https://github.com/typst-community/rowmantic/releases/tag/v0.1.1
 [0.1.0]: https://github.com/typst-community/rowmantic/releases/tag/v0.1.0
