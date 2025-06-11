@@ -196,14 +196,17 @@ Example from Wikipedia#footnote[https://en.wikipedia.org/wiki/Interlinear_gloss]
 
 ````)
 
-== Double semicolon separator
+== Double Semicolon Separator
 
+#block(sticky: true)[
+  The cell separator can be more than a single character, like in this example.
+]
 #show-example(```typst
 #rowtable(
   separator: ";;",
   stroke: 0.5pt,
-  [First           ;; This is a literal \;\; and ; and , and & ],
-  [Second; Third   ;; Equation $pi = 3.1415...$],
+  [First    ;; Second; Third ],
+  [Fourth   ;; This is a literal \;\; and ; and , and & ],
 )
 ```)
 
@@ -242,8 +245,7 @@ Table cells can be customized with the usual properties (`stroke`, `fill`, et.c.
 #let cell = table.cell
 #rowtable(
   separator: ",",
-  column-width: 3em,
-  rows: 3em,
+  column-width: 3em, rows: 3em,
   [1, 2, 3,     #cell(fill: yellow)[4]],
   [A, B, #cell(colspan: 2, stroke: 2pt)[Extra Wide]],
 )
@@ -251,22 +253,21 @@ Table cells can be customized with the usual properties (`stroke`, `fill`, et.c.
 
 where ```typst [...]``` is the markup for the whole row. Then automatic row length computations will continue to work correctly.
 
-The column span is straightforward, because it's contained in the row, so support for this
-was available from `rowmantic`'s first version.
+The column span is straightforward, because it's contained in the row, but there is also support for
+`rowspan`, seen below. The rows that follow take the `rowspan`-reserved space into account
+when computing their effective length.
 
-However, there is also support for `rowspan` since version 0.2.0:
-
-#show-example(```typst
+#show-example(breakable: true, ```typst
 #show table.cell: it => if it.colspan + it.rowspan > 2 { strong(it) } else { it }
 #let cell = table.cell
 #rowtable(
   separator: ",",
-  column-width: 3em, rows: 3em,
+  column-width: 2.5em, rows: 2.5em,
   inset: 0.25em,
   [#cell(rowspan: 2, colspan: 2)[Rs2, Cs2], 1, 2, #cell(rowspan: 3)[Rs3], 4],
-  [#expandcell[Expandcell], #cell(rowspan: 3)[Rs3]],
+  [#expandcell[expandc.], #cell(rowspan: 3)[Rs3]],
   [e, f, g, h],
-  [#expandcell[Expandcell], ijk],
+  [#expandcell[expandcell], ijk],
 )
 ```)
 
@@ -355,7 +356,7 @@ example, the colorful annotations add the most of the complexity. `rowtable` con
 
 #pagebreak(weak: true)
 
-=== Equations with alignment
+=== Equations with Alignment
 
 Use a different separator than `&` to use equations with alignment.
 
