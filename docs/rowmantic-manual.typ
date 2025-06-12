@@ -99,7 +99,7 @@ The `rowtable` function takes a markup block `[...]` per row, and the markup is 
   )
 }
 
-For improved table ergonomics, the table sizes the number of columns by the longest row. All rows are effectively completed so that they are of full length. This creates a better the editing experience, as rows can be filled out gradually.
+For improved table ergonomics, the longest row determines the number of columns, and all rows are effectively completed so that they are of full length. This creates a better the editing experience, as rows and columns can be filled out gradually.
 
 #outline(depth: 2)
 
@@ -248,7 +248,7 @@ Table cells can be customized with the usual properties (`stroke`, `fill`, et.c.
 #rowtable(
   separator: ",",
   column-width: 3em, rows: 3em,
-  [1, 2, 3,     #cell(fill: yellow)[4]],
+  [1, 2, 3, #cell(fill: yellow)[4]],
   [A, B, #cell(colspan: 2, stroke: 2pt)[Extra Wide]],
 )
 ```)
@@ -276,7 +276,8 @@ when computing their effective length.
 #pagebreak(weak: true)
 == Equations
 
-Equations as rows are are split on `&` by default, but it is configurable. Note that `&` can be escaped in equations, but other separator symbols are not as easy to escape #footnote[The escape for `&` is just `\&`, for other separators like for example the comma a `box` or `","` is used to escape them.].
+Equations can be treated as rows by themselves, and they split on `&` by default (but it is configurable).
+Note that `&` can be escaped in equations, but other separator symbols are not as easy to escape #footnote[The escape for `&` is just `\&`, for other separators like for example the comma a `box` or `","` is used to escape them.].
 
 #show-example(```typst
 #rowtable(
@@ -285,9 +286,9 @@ Equations as rows are are split on `&` by default, but it is configurable. Note 
   separator: ",",     // regular sep
   separator-eq: $&$,  // equation sep
   [A, B, C, D, E],
-  $1  & x   & x^2 & sum_i^n & #[inline equation row]$,
-  $ 1 & x   & x^2 & sum_i^n & #[block equation row] $,
-  [$1$, $x$, $x^2$, $ sum_i^n $, markup with embedded \ equations row],
+  $1    & x   & x^2   & sum_i^n & #[inline equation row]$,
+  $ 1   & x   & x^2   & sum_i^n & #[block equation row] $,
+  [$1$, $x$,  $x^2$,  $ sum_i^n $, markup with embedded \ equations row],
 )
 ```)
 
