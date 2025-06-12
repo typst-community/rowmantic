@@ -7,16 +7,16 @@ The `rowtable` function takes a markup block `[...]` per row, and the markup is 
 
 For example, the following
 
-```typc
-rowtable(
+```typ,notest
+#rowtable(
   [A & B],
   [C & D & E])
 ```
 
 is equivalent to this `table`:
 
-```typc
-table(columns: 3,
+```typ,notest
+#table(columns: 3,
   [A], [B], [],
   [C], [D], [E])
 ```
@@ -38,8 +38,8 @@ For improved table ergonomics, the longest row determines the number of columns,
 
 #rowtable(
   stroke: 0.5pt,
-  [Input tables & row     & by      & row       ],
-  [Otherwise    & same as & regular & `#table`  ],
+  [Input      & tables  & row-    & wise      ],
+  [Otherwise  & same as & regular & `#table`  ],
 )
 ```
 
@@ -88,7 +88,7 @@ TBD
 
 ## Function Documentation and Manual
 
-Please <a href="docs/rowmantic-manual.pdf">see the manual</a> for function documentation and more examples.
+Please <a href="docs/rowmantic-manual.pdf">see the manual</a> for more explanations, examples and function documentation.
 
 ## License
 
