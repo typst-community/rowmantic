@@ -99,9 +99,11 @@ The `rowtable` function takes a markup block `[...]` per row, and the markup is 
   )
 }
 
-For improved table ergonomics, the longest row determines the number of columns, and all rows are effectively completed so that they are of full length. This creates a better the editing experience, as rows and columns can be filled out gradually.
+For improved table ergonomics, the longest row determines the number of columns, and all rows are effectively completed so that they are of full length. This creates a better editing experience, as rows and columns can be filled out gradually.
 
-#outline(depth: 2)
+#context {
+  outline(depth: 2, target: selector(heading).after(here()))
+}
 
 #pagebreak(weak: true)
 
