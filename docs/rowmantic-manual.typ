@@ -168,7 +168,7 @@ Example from Wikipedia#footnote[https://en.wikipedia.org/wiki/Interlinear_gloss]
   align: horizon,
   column-width: 1fr,
   row-filler: [N/A],
-  stroke: (x, y) => { if x == 3 { (y: 0pt, right: 0pt) } else { (x: 0.5pt, y: 0.5pt) } },
+  stroke: (x, y) => if x == 3 { none } else { 0.5pt },
   [_Emphasis &_   & *Strong &*  & Literal \&  & Escape the separator with `\&`],
   $ integral_(-oo)^oo f(x) thin d x   & integral_0^oo f(t) thin e^(-s t) thin d t
     & X \& Y & "Display equations" \ "as a row" $,
@@ -178,7 +178,7 @@ Example from Wikipedia#footnote[https://en.wikipedia.org/wiki/Interlinear_gloss]
       [#figure(rect[A], caption: "Top")<fig1>]
     }
     &
-    See @fig1 \ \& @fig2
+    See @fig1 \& @fig2
     &
     #figure(rect[B], caption: "Bot")<fig2>
     &
