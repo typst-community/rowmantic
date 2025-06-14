@@ -445,15 +445,15 @@ delimiters in `rowspan` cells. Grid lines are drawn to show how the table is con
 
 *Properties/Behaviours*
 
-- A row of just one item is not a row, like this: `[*One item*]`. Fix this by inserting a space: `[*One item* ]` or a cell separator: `[*One item* & ]`.#footnote[Only content sequences and text are treated as rows and split on separators. `[*item*]` ends up being a `strong` element.]
+- A single _styled_ item is not treated as a row, like this: `[*One item*]`. Fix this by inserting a cell separator: `[*One item* & ]`.#footnote[Only content sequences and text are treated as rows and split on separators. `[*item*]` ends up being a `strong` element.]
 - Table cells can be passed outside the rows, and this messes up the row length calculations. Avoid doing this.
 
 *Unimplemented*
 
 - Multi-row `table.header/footer` are not supported yet.
-- `rowspan` is not supported in cells in rows inside `table.header/footer`.
+- `rowspan` is not supported in rows inside `table.header/footer`.
 - `expandcell` can collide with `rowspan`ned cells (if they are not placed along the left or right side of the table); use `colspan` as a workaround when necessary.
-- `rowtable` does not properly support being used as a "front end" for `grid`.
+- `rowtable` does not properly support being used as a front end for `grid`.
 
 #pagebreak(weak: true)
 
