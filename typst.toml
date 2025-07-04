@@ -8,7 +8,7 @@ description = "Define tables row-wise, with inline separators between cells."
 repository = "https://github.com/typst-community/rowmantic"
 
 compiler = "0.13.0"
-categories = ["components"]
+categories = ["components", "visualization"]
 keywords = [
     "table",
     "row",
