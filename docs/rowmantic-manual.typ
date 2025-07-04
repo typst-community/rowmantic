@@ -1,7 +1,7 @@
 // Copyright 2025 Ulrik Sverdrup "bluss" and rowmantic contributors.
 // Distributed under the terms of the EUPL v1.2 or any later version.
 
-#import "../src/lib.typ" as self: rowtable, expandcell
+#import "../src/lib.typ" as self: rowtable, expandcell, row
 #import "@preview/tidy:0.4.3"
 
 #let subtitletext = [A Typst package for row-wise table editing]
@@ -11,7 +11,7 @@
     title: [rowmantic #pkgdata.package.version - Manual - #subtitletext])
   set page(numbering: "1")
   set text(font: "Atkinson Hyperlegible Next")
-  set text(slashed-zero: true)  // affects only fira code
+  show raw: set text(slashed-zero: true)  // affects only fira code
   show raw: set text(font: "Fira Code", ligatures: false, features: (calt: 0), weight: "medium")
   show raw.where(block: true): set block(stroke: 0.5pt + gray, outset: (x: 0.6em, y: 0.5em))
   show raw.where(block: true): set block(width: 95%)
@@ -30,6 +30,7 @@
   let scope = if scope == auto { (
     rowtable: rowtable,
     expandcell: expandcell,
+    row: row,
   ) } else { scope }
   let evaluated = eval(code.text, mode: "markup", scope: scope)
   set text(size: 0.9em) if small
@@ -276,6 +277,58 @@ when computing their effective length.
 ```)
 
 #pagebreak(weak: true)
+== The `row` function
+
+The `row` function can be used to transform or style a whole row at a time. For example, ```typst row([a & b & c], map: strong)``` styles the row using *`strong`*. The row function is entirely optional. It has three arguments:
+
+- `map` - apply a function to each element
+- `imap` - apply a funtion to each element, and also receive its index
+- `cell` - set a dictionary of cell properties, e.g. `fill` and `stroke` on the whole row.
+
+It is recommended to use the style ```typst row([...], map: ..)``` with the row markup as the first argument so that rows align well to each other.
+
+// See the example below with examples of `map`, `imap` and `cell`, including an example of returning `table.cell` from the mapping functions (new cell fields are merged with existing cell fields).
+//
+*Example:* Use `map` or `imap` to transform or style the cells of a row.
+#v(0.5em, weak: true)
+
+#show-example(scope: (:), small: true)[```typst
+#import "/src/lib.typ": rowtable, row
+/// Draw cell with a color between `from` and `to`
+#let colorcells(index, elt, from: yellow, to: red, step: 20%) = {
+  let fr = index * step
+  let fill = color.mix((to, fr), (from, 100% - fr)).lighten(50%)
+  table.cell(fill: fill, elt)
+}
+#rowtable(
+  separator: ",", align: center, inset: 0.7em,
+  row([0,     1,    2,     3,     4,       5   ], map: strong),
+  row($alpha, beta, gamma, delta, epsilon, zeta$, imap: (idx, elt) => $elt^idx$),
+  row([a,     b,    c,     d,     e,       f   ], imap: colorcells),
+)
+```]
+
+*Example:* Use `map` to highlight empty entries, and `cell` to set background color.
+#v(0.5em, weak: true)
+
+#show-example(small: true)[```typst
+/// Draw cell with thick stroke if not empty, and red background if empty
+#let markempty(elt) = {
+  if elt != [] and elt != none {
+    table.cell(stroke: 2pt, elt)
+  } else {
+    table.cell(fill: red.lighten(80%), elt)
+  }
+}
+#rowtable(
+  separator: "&", align: center, inset: 0.7em,
+  row([ A &   & C &   & E & F ], map: markempty),
+  row([ G & H &   & J & K &   ], map: markempty),
+  row([ ~ & ], cell: (fill: gray)),
+)
+```]
+
+#pagebreak(weak: true)
 == Equations
 
 Equations can be treated as rows by themselves, and they split on `&` by default (but it is configurable).
@@ -461,7 +514,7 @@ delimiters in `rowspan` cells. Grid lines are drawn to show how the table is con
 #show heading.where(level: 4): set heading(numbering: none, outlined: false)
 
 #{
-  let expose = ("rowtable", "row-split", "expandcell")
+  let expose = ("rowtable", "row", "row-split", "expandcell")
   let mod = tidy.parse-module(read("/src/rowtable.typ"), name: "Function Reference", old-syntax: true)
   mod.functions = mod.functions.filter(elt => elt.name in expose)
   mod.variables = mod.variables.filter(elt => elt.name in expose)
