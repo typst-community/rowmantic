@@ -31,3 +31,14 @@
   table.footer(row([$*$, #expandcell(stroke: (x: 0pt))[this is a table footer], $*$],
     cell: (fill: green.lighten(85%)))),
 )
+
+#pagebreak()
+
+// Test imap column numbers
+#let imf = (i, elt) => [#i/#repr(elt)]
+#rowtable(
+  row([1 & 2 & #cell(colspan: 2)[3] & 4], imap: imf),
+  row([#cell(colspan: 3)[1] & 2 & #cell(colspan: 2)[3] & 4], imap: imf),
+  row([#cell(rowspan: 2)[1] & 2 & #cell(rowspan: 2)[3]], imap: imf),
+  row([], imap: imf),
+)
