@@ -58,8 +58,11 @@
 
 #let expandcell-name = "__rowmantic_expandcell"
 #let tombstone-name = "__rowmantic_tombstone"
+#let row-name = "__rowmantic_row"
 #let is-expandcell(elt) = (isfunc(elt, metadata)
   and type(elt.value) == dictionary and expandcell-name in elt.value)
+#let is-row(elt) = (isfunc(elt, metadata)
+  and type(elt.value) == dictionary and row-name in elt.value)
 #let is-tombstone(elt) = isfunc(elt, metadata) and elt.value == tombstone-name
 /// a tombstone is not user visible and it's a placeholder for space occupied
 /// by a cell with rowspan in another row
@@ -281,15 +284,28 @@
   let procarg = ()
 
   /// Create a row from content ([] or $$ argument)
-  /// return row as array or none
-  /// - arg (any):
-  /// -> array, none
+  /// return `(row: row)` or none, row being an array, with optional `fmtmap` key.
+  /// -> dictionary, none
   let maybe-makerow(arg) = {
-    if isfunc(arg, sequence) or isfunc(arg, text) or is-expandcell(arg) {
+    // unwrap row() function
+    let isrow = is-row(arg)
+    let (arg, fmtrec) = if isrow {
+      let fmtrec = if arg.value.func != none { (fmtmap: arg.value.func) }
+      (arg.value.body, fmtrec)
+    } else {
+      (arg, none)
+    }
+
+    let row = if isfunc(arg, sequence) or isfunc(arg, text) or is-expandcell(arg) {
       row-split(arg, sep: separator)
     } else if isfunc(arg, math.equation) and separator-eq != none {
       let separator-eq = _normalize-equation-sep(separator, separator-eq)
       _as-equations(row-split(arg.body, sep: separator-eq), block: arg.block)
+    } else if isrow {
+      panic("item in row() is not a valid row, got: " + repr(arg) + ". Hint: add a separator.")
+    }
+    if row != none {
+      (row: row) + fmtrec
     }
   }
 
@@ -297,7 +313,7 @@
     // regular row
     let row = maybe-makerow(arg)
     if row != none {
-      procarg.push((row: row))
+      procarg.push(row)
       continue
     }
     // row inside header/footer
@@ -305,7 +321,7 @@
       let body = arg.children.at(0).body
       let row = maybe-makerow(body)
       if row != none {
-        procarg.push((row: row, wrap: _headfootwrap(arg)))
+        procarg.push((..row, wrap: _headfootwrap(arg)))
         continue
       }
     }
@@ -351,10 +367,16 @@
   let row-index = 0
   for (pindex, parg) in procarg.enumerate() {
     if "row" in parg {
+      let row = rows.at(row-index)
+      // apply row map functions
+      if "fmtmap" in parg {
+        row = row.enumerate().map(parg.fmtmap)
+      }
+      // apply row wrap functions
       if "wrap" in parg {
-        targs.push((parg.wrap)(rows.at(row-index)))
+        targs.push((parg.wrap)(row))
       } else {
-        targs += rows.at(row-index)
+        targs += row
       }
       row-index += 1
     } else {
@@ -391,7 +413,82 @@
 /// - body (content): Cell body
 /// -> content
 #let expandcell(..args, body) = {
-  assert("colspan" not in args.named())
-  assert("rowspan" not in args.named())
+  assert("colspan" not in args.named(), message: "colspan not allowed for expandcell")
+  assert("rowspan" not in args.named(), message: "rowspan not allowed for expandcell")
   metadata(((expandcell-name): (args, body)))
+}
+
+#let _invalid_cell_arg = ("x", "y", "rowspan", "colspan")
+#let _check-cellargs(args) = {
+  if args.len() != 0 {
+    for inval in _invalid_cell_arg {
+      assert(inval not in args, message: inval + " not allowed for row cells")
+    }
+  }
+}
+
+#let _setlabel(elt, label) = if label != none { [#elt#label] } else { elt }
+
+/// "Flip" or ensure cell properties
+/// - elt (any): If this is content, wrap it in a cell with the given extra fields.
+///   if this is already a cell, unwrap the body and re-wrap it in a new cell, where `elt`'s fields override `fields` if they overlap.
+/// - ..fields (arguments): Extra cell fields to add
+/// _ _cellfunc (function): element function for the table cell
+#let flipcell(..fields, elt, _cellfunc: table.cell) = {
+  assert.eq(fields.pos().len(), 0, message: "expected no positional fields")
+  let fields = fields.named()
+  if type(elt) == content and isfunc(elt, _cellfunc) {
+    let fi = elt.fields()
+    let body = fi.remove("body")
+    let label = fi.remove("label", default: fields.remove("label", default: none))
+    _setlabel(_cellfunc(..fields, ..fi, body), label)
+  } else {
+    let label = fields.remove("label", default: none)
+    _setlabel(_cellfunc(..fields, elt), label)
+  }
+}
+
+#let mapcell-adaptor(func, elt, set-cell: (:), _cellfunc: table.cell, use-index: false) = {
+  let (index, body) = elt
+  let iarg = if use-index { (index, ) } else { () }
+  let flipcell = flipcell.with(_cellfunc: _cellfunc)
+  let iscell(elt) = type(elt) == content and isfunc(elt, _cellfunc)
+  if iscell(body) {
+    let fields = body.fields()
+    let cellbody = fields.remove("body")
+    flipcell(..fields, ..set-cell, func(..iarg, cellbody))
+  } else {
+    let new-body = func(..iarg, body)
+    if iscell(new-body) or set-cell.len() != 0 {
+      flipcell(..set-cell, new-body)
+    } else {
+      new-body
+    }
+  }
+}
+
+#let _identity(x) = x
+#let _typecheck(name, elt, type) = {
+  if std.type(elt) != type { panic(name + " must be " + repr(type) + ", got: " + repr(std.type(elt))) }
+}
+
+/// Style a whole row at once
+///
+/// All arguments are optional. Only one of `map` or `imap` can be passed at the same time.
+///
+/// Cell properties are resolved in this order: 1. cell returned from map/imap, 2. cell properties
+/// from `cell`. 3. cell properties from the cell in the row.
+///
+/// - map (none, function): apply this function to the content of each cell, after resolving row lengths and padding rows. Passing cell content, signature: function(any) -> any.
+/// - imap (none, function): apply this function to the content of each cell, after resolving row lengths and padding rows. Passing index and cell content, signature: function(int, any) -> any.
+/// - cell (dictionary): set these `table.cell` settings on each cell of the row, after resolving row lengths and padding rows. The properties `x`, `y`, `colspan`, `rowspan` are not allowed here.
+#let row(body, map: none, imap: none, cell: (:)) = {
+  assert(map == none or imap == none, message: "only one of map and imap can be passed")
+  if map == none { map = imap }
+  if map == none { map = _identity }
+  _typecheck("map", map, function)
+  _typecheck("cell", cell, dictionary)
+  _check-cellargs(cell)
+  let func = mapcell-adaptor.with(map, set-cell: cell, use-index: imap != none)
+  metadata(((row-name): true, func: func, body: body))
 }
