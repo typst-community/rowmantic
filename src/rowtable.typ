@@ -167,19 +167,22 @@
 }
 
 
+/// Compute the lenght of a single element
+#let _elt-len(elt) = {
+  if isfunc(elt, table.cell) {
+    elt.at("colspan", default: 1)
+  } else if isfuncv(elt, table.hline, table.vline) {
+    0
+  } else {
+    // this case includes expandcell
+    1
+  }
+}
+
 /// Compute row length of array of elements, taking table.cell.colspan into account
 #let _row-len(row) = {
   let len = 0
-  for elt in row {
-    if isfunc(elt, table.cell) {
-      len += elt.at("colspan", default: 1)
-    } else if isfuncv(elt, table.hline, table.vline) {
-      len += 0
-    } else {
-      // this case includes expandcell
-      len += 1
-    }
-  }
+  for elt in row { len += _elt-len(elt) }
   len
 }
 
