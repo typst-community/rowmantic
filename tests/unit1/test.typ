@@ -51,3 +51,11 @@
     cell(rowspan: 2, colspan: 2, [A]), [B], none,
     [C], [D],
     [e], [f], [g], [h]))
+
+
+// Past bugs section
+// Treat [ ] (space) as a row
+#assert.eq(rowtable([A&B], [ ], table: arguments), arguments(columns: 2, [A], [B], [], none))
+#assert.eq(rowtable([A&B], [ ], [], table: arguments), arguments(columns: 2, [A], [B], [], none, none, none))
+#assert.eq(row-split([ ]), ([], ))
+#assert.eq(row-split([ ], strip-space: false), ([ ], ))
