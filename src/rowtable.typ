@@ -485,7 +485,10 @@
 /// from `cell`. 3. cell properties from the cell in the row.
 ///
 /// - map (none, function): apply this function to the content of each cell, after resolving row lengths and padding rows. Passing cell content, signature: function(any) -> any.
-/// - imap (none, function): apply this function to the content of each cell, after resolving row lengths and padding rows. Passing index and cell content, signature: function(int, any) -> any.
+/// - imap (none, function): apply this function to the content of each cell,
+///  after resolving row lengths and padding rows. Passing index and cell
+///  content, signature: function(int, any) -> any. Note that this is just the index in the row,
+///  which does not correspond to the column number in complex layouts.
 /// - cell (dictionary): set these `table.cell` settings on each cell of the row, after resolving row lengths and padding rows. The properties `x`, `y`, `colspan`, `rowspan` are not allowed here.
 #let row(body, map: none, imap: none, cell: (:)) = {
   assert(map == none or imap == none, message: "only one of map and imap can be passed")
