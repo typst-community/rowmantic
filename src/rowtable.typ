@@ -111,6 +111,8 @@
     }
   } else if is-expandcell(it) {
     (it, )
+  } else if isfunc(it, space) and strip-space {
+    []
   } else {
     it
   }
@@ -296,7 +298,7 @@
       (arg, none)
     }
 
-    let row = if isfunc(arg, sequence) or isfunc(arg, text) or is-expandcell(arg) {
+    let row = if isfuncv(arg, sequence, text, space) or is-expandcell(arg) {
       row-split(arg, sep: separator)
     } else if isfunc(arg, math.equation) and separator-eq != none {
       let separator-eq = _normalize-equation-sep(separator, separator-eq)
