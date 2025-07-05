@@ -1,4 +1,4 @@
-#import "/src/lib.typ": row-split, rowtable, expandcell
+#import "/src/lib.typ": row-split, rowtable, expandcell, row
 
 #assert.eq(row-split([A,B, C], sep: ","),  ([A], [B], [C]))
 #assert.eq(row-split([ Abcd ], sep: ","), ([Abcd], ))
@@ -51,6 +51,17 @@
     cell(rowspan: 2, colspan: 2, [A]), [B], none,
     [C], [D],
     [e], [f], [g], [h]))
+
+// row()
+#assert.eq(rowtable(row([A & B], map: strong)), table(columns: 2, [*A*], [*B*]))
+// map colspan
+#assert.eq(rowtable(row([A & #cell(colspan: 2)[B]], map: strong)),
+  table(columns: 3, [*A*], table.cell(colspan: 2)[*B*]))
+// combine cell properties
+#assert.eq(rowtable(row([A & #cell(colspan: 2)[B]], map: elt => table.cell(fill: yellow, elt))),
+  table(columns: 3, table.cell(fill: yellow)[A], table.cell(colspan: 2, fill: yellow)[B]))
+#assert.eq(rowtable(row([A & #cell(colspan: 2)[B]], cell: (stroke: none))),
+  table(columns: 3, table.cell(stroke: none)[A], table.cell(colspan: 2, stroke: none)[B]))
 
 
 // Past bugs section
