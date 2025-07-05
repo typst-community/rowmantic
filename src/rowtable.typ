@@ -446,6 +446,7 @@
     let fi = elt.fields()
     let body = fi.remove("body")
     let label = fi.remove("label", default: fields.remove("label", default: none))
+    _check-cellargs(fi)  // check the new custom args
     _setlabel(_cellfunc(..fields, ..fi, body), label)
   } else {
     let label = fields.remove("label", default: none)
