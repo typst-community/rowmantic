@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.0] - Unreleased
+
+- **Add**: New function `row()` which can transform or style elements in a row #12
+- **Fix**: A markup block of just space `[ ]` now counts as a row #12
+
+
 ## [0.3.0] - 2025-06-12
 
 ### Added
@@ -46,7 +52,7 @@ Initial release
 
 
 <!-- versions are final when published on typst universe -->
-[Unreleased]: https://github.com/typst-community/rowmantic/compare/v0.1.0...HEAD
+[0.4.0]: https://github.com/typst-community/rowmantic/releases/tag/v0.4.0
 [0.3.0]: https://github.com/typst-community/rowmantic/releases/tag/v0.3.0
 [0.2.0]: https://github.com/typst-community/rowmantic/releases/tag/v0.2.0
 [0.1.1]: https://github.com/typst-community/rowmantic/releases/tag/v0.1.1
