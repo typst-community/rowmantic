@@ -24,7 +24,6 @@
 
 #show: template
 
-// #set text(features: (set ))
 #let show-example(code, scope: auto, columns: 1, small: false, breakable: false) = {
   show: block.with(breakable: breakable)
   let scope = if scope == auto { (
