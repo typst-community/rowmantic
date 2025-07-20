@@ -220,7 +220,7 @@ Example from Wikipedia#footnote[https://en.wikipedia.org/wiki/Interlinear_gloss]
 Use the `table` argument to let rowtable pass its result to a different table function rather than the standard one, for example `pillar.table` (shown below) or `zero.ztable`.
 
 #show-example(```typst
-#import "@preview/pillar:0.3.2"
+#import "@preview/pillar:0.3.3"
 #set text(font: "Libertinus Serif")
 #show table.cell.where(y: 0): strong
 #rowtable(
