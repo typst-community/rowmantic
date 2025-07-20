@@ -215,7 +215,7 @@ Example from Wikipedia#footnote[https://en.wikipedia.org/wiki/Interlinear_gloss]
 ```)
 
 
-== Using other Table Functions
+== Using Other Table Functions
 
 Use the `table` argument to let rowtable pass its result to a different table function rather than the standard one, for example `pillar.table` (shown below) or `zero.ztable`.
 
@@ -276,7 +276,7 @@ when computing their effective length.
 ```)
 
 #pagebreak(weak: true)
-== The `row` function
+== The `row` Function
 
 The `row` function can be used to transform or style a whole row at a time. For example, ```typst row([a & b & c], map: strong)``` styles the row using *`strong`*. The row function is entirely optional. It has three arguments:
 
