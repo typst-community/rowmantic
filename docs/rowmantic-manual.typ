@@ -278,7 +278,7 @@ when computing their effective length.
 #pagebreak(weak: true)
 == The `row` Function
 
-The `row` function can be used to transform or style a whole row at a time. For example, ```typst row([a & b & c], map: strong)``` styles the row using *`strong`*. The row function is entirely optional. It has three arguments:
+The `row` function can be used to transform or style a whole row at a time. For example, ```typst row([a & b & c], map: strong)``` styles the row using *`strong`*. The row function is entirely optional. It has three optional arguments:
 
 - `map` - apply a function to each element
 - `imap` - apply a funtion to each element, and also receive its index
