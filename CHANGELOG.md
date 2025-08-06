@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.4.0] - Unreleased
+## [0.4.0] - 2025-08-07
 
 - **Add**: New function `row()` which can transform or style elements in a row #12
 - **Fix**: A markup block of just space `[ ]` now counts as a row #12
