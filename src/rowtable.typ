@@ -95,6 +95,9 @@
       } else if contentsep and isfunc(elt, sep.func()) and elt == sep {
         res.push(accum)
         accum = ()
+      } else if (sep == " " or sep == "  ") and isfunc(elt, space) {
+        res.push(accum)
+        accum = ()
       } else {
         accum.push(elt)
       }
@@ -262,7 +265,9 @@
 ///   Arguments to `table` pass through. A `columns` argument to the table is possible but not
 ///   mandatory.
 /// - separator (str): Configurable cell separator in rows. Good choices are `"&"`, `","` or `";"`.
-///   Escape the separator using e.g. ```typst \&```
+///   Escape the separator using e.g. ```typst \&```.
+///   As a special case `" "` will split on consecutive whitespace (one or more spaces, tabs or a newline).
+///   Additionally, using `"  "` (two spaces) will only split on
 /// - separator-eq (none, auto, equation): Cell separator for equations, must be single symbol.
 ///   By default depends on `separator` if possible otherwise falls back to ```typst $&$```.
 ///   Set to ```typc none``` to disable splitting equations.

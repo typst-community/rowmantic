@@ -11,6 +11,14 @@
 #assert.eq(row-split([A,B\,C], sep: ","),  ([A], [B#sym.comma;C]))
 #assert.eq(row-split([A&B\&C], sep: "&"),  ([A], [B#sym.amp;C]))
 
+// space as delimiter
+#assert.eq(row-split([A B], sep: " "),  ([A], [B]))
+#assert.eq(row-split([A *B*], sep: " "),  ([A], [*B*]))
+#assert.eq(row-split([A B  C	D E
+F G~H], sep: " "),  ([A], [B], [C], [D], [E], [F], [G~H]))
+// double space as delimiter
+#assert.eq(row-split([A B  C	D E *F*], sep: "  "),  ([A B], [C], [D E], [*F*]))
+
 // table
 #assert.eq(rowtable(), table(columns: 1))
 #assert.eq(rowtable([A & B], [C]), table(columns: 2, [A], [B], [C], []))

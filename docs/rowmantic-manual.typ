@@ -200,10 +200,11 @@ Example from Wikipedia#footnote[https://en.wikipedia.org/wiki/Interlinear_gloss]
 
 ````)
 
-== Double Semicolon Separator
+== Other Separators
 
 #block(sticky: true)[
-  The cell separator can be more than a single character, like in this example.
+  The cell separator is specified as a string with the `separator` argument.
+  It can be more than a single character, like in this example with double semicolon:
 ]
 #show-example(```typst
 #rowtable(
@@ -214,10 +215,25 @@ Example from Wikipedia#footnote[https://en.wikipedia.org/wiki/Interlinear_gloss]
 )
 ```)
 
+Using a space as a separator has special behaviour -- because of how spaces are treated in Typst markup: multiple spaces, tabs, or a (single) newline are all collapsed into just whitespace. Using a space as separator splits on any such whitespace:
+
+#show-example(```typst
+#rowtable(
+  separator: " ",
+  stroke: 0.5pt,
+  [First  Second Third~(3rd)],
+  [Fourth Fifth  Sixth~(6th)],
+)
+```)
+
+The recommended way to insert a literal space in this case is to use ```typst ~```.
+
 
 == Using Other Table Functions
 
-Use the `table` argument to let rowtable pass its result to a different table function rather than the standard one, for example `pillar.table` (shown below) or `zero.ztable`.
+#block(sticky: true)[
+  Use the `table` argument to let rowtable pass its result to a different table function rather than the standard one, for example `pillar.table` (shown below) or `zero.ztable`.
+  ]
 
 #show-example(```typst
 #import "@preview/pillar:0.3.3"
