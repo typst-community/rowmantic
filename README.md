@@ -34,7 +34,7 @@ For improved table ergonomics, the longest row determines the number of columns,
 </p>
 
 ```typ
-#import "@preview/rowmantic:0.4.0": rowtable
+#import "@preview/rowmantic:0.5.0": rowtable
 
 #rowtable(
   stroke: 0.5pt,
@@ -54,16 +54,14 @@ For improved table ergonomics, the longest row determines the number of columns,
 </p>
 
 ```typ
-#import "@preview/rowmantic:0.4.0": rowtable, expandcell
-
+#import "@preview/rowmantic:0.5.0": rowtable, expandcell
 #{
-  set table.hline(stroke: 0.08em)
   show regex("\d"): super.with(size: 0.8em, typographic: false)
   show table.cell: it => { set text(size: 0.9em) if it.y >= 1; it }
   show table.cell.where(y: 0): emph
   rowtable(
     separator: ",",   // configurable separator
-    stroke: 0pt,      // pass through table arguments, hlines, cells et.c.
+    stroke: none,     // pass through table arguments, hlines, cells et.c.
     inset: (x: 0em),
     column-gutter: 0.9em,
     // rows are filled to be equal length after collecting cells
