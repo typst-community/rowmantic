@@ -1,4 +1,4 @@
-#import "/src/lib.typ": row-split, rowtable, expandcell, row
+#import "/src/lib.typ": row-split, rowtable, expandcell, row, rowgrid
 
 #assert.eq(row-split([A,B, C], sep: ","),  ([A], [B], [C]))
 #assert.eq(row-split([ Abcd ], sep: ","), ([Abcd], ))
@@ -70,6 +70,16 @@ F G~H], sep: " "),  ([A], [B], [C], [D], [E], [F], [G~H]))
   table(columns: 3, table.cell(fill: yellow)[A], table.cell(colspan: 2, fill: yellow)[B]))
 #assert.eq(rowtable(row([A & #cell(colspan: 2)[B]], cell: (stroke: none))),
   table(columns: 3, table.cell(stroke: none)[A], table.cell(colspan: 2, stroke: none)[B]))
+
+
+// rowgrid
+#assert.eq(rowgrid(table: arguments, separator: ",", grid.header([A, B, C], repeat: false)),
+  arguments(columns: 3, grid.header([A], [B], [C], repeat: false)))
+#assert.eq(rowgrid(row([A & #grid.cell(colspan: 2)[B]], map: elt => grid.cell(fill: yellow, elt))),
+  grid(columns: 3, grid.cell(fill: yellow)[A], grid.cell(colspan: 2, fill: yellow)[B]))
+// rowgrid expandcell
+#assert.eq(rowgrid([A & B], expandcell[E], grid.header(expandcell[F])),
+  grid(columns: 2, [A], [B], grid.cell(colspan: 2)[E], grid.header(grid.cell(colspan: 2)[F])))
 
 
 // Past bugs section
