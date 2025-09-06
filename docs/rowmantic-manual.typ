@@ -203,8 +203,9 @@ Example from Wikipedia#footnote[https://en.wikipedia.org/wiki/Interlinear_gloss]
 == Other Separators
 
 #block(sticky: true)[
+  *Example:* A double semicolon.
   The cell separator is specified as a string with the `separator` argument.
-  It can be more than a single character, like in this example with double semicolon:
+  It can be more than a single character, like in this example:
 ]
 #show-example(```typst
 #rowtable(
@@ -215,7 +216,10 @@ Example from Wikipedia#footnote[https://en.wikipedia.org/wiki/Interlinear_gloss]
 )
 ```)
 
+#block(sticky: true)[
+*Example:*
 Using a space as a separator has special behaviour -- because of how spaces are treated in Typst markup: multiple spaces, tabs, or a (single) newline are all collapsed into just whitespace. Using a space as separator splits on any such whitespace:
+]
 
 #show-example(```typst
 #rowtable(
@@ -227,6 +231,7 @@ Using a space as a separator has special behaviour -- because of how spaces are 
 ```)
 
 The recommended way to insert a literal space in this case is to use ```typst ~```.
+
 
 
 == Using Other Table Functions
