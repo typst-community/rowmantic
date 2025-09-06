@@ -86,7 +86,7 @@ TBD
 
 ## Function Documentation and Manual
 
-Please <a href="docs/rowmantic-manual.pdf">see the manual</a> for more explanations, examples and function documentation.
+Please <a href="docs/rowmantic-manual.pdf?raw=1">see the manual</a> for more explanations, examples and function documentation.
 
 ## License
 
