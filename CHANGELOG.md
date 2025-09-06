@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.0] - Unreleased
+
+- **Change**: `separator: " "` (a space) now splits on spaces and whitespace in markup #14
+- **Add**: `rowgrid` function which forwards to `rowtable` but with other defaults and creates a grid; rowtable now supports both grids and tables when the appropriate options are passed. #15
+- **Change**: The representation of `expandcell()` changed (but the representation is internal anyway)
+
+
 ## [0.4.0] - 2025-08-07
 
 - **Add**: New function `row()` which can transform or style elements in a row #12
