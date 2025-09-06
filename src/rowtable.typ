@@ -55,6 +55,7 @@
 // these are separate for performance concern (maybe silly?)
 #let isfunc(arg, f) = arg != none and arg.func() == f
 #let isfuncv(arg, ..fs) = arg != none and fs.pos().any(f => arg.func() == f)
+#let iscell(arg) = arg != none and (arg.func() == table.cell or arg.func() == grid.cell)
 
 #let expandcell-name = "__rowmantic_expandcell"
 #let tombstone-name = "__rowmantic_tombstone"
@@ -152,7 +153,7 @@
 #let _as-equation(elt, block: false) = {
   // if we get a table cell here, we need to invert the order
   // so that the cell is the outermost layer
-  if isfunc(elt, table.cell) {
+  if iscell(elt) {
     let fields = elt.fields()
     let body = fields.remove("body")
     elt.func()(..fields, _as-equation(body, block: block))
@@ -170,11 +171,11 @@
 }
 
 
-/// Compute the lenght of a single element
+/// Compute the length of a single element
 #let _elt-len(elt) = {
-  if isfunc(elt, table.cell) {
+  if iscell(elt) {
     elt.at("colspan", default: 1)
-  } else if isfuncv(elt, table.hline, table.vline) {
+  } else if isfuncv(elt, table.hline, table.vline, grid.hline, grid.vline) {
     0
   } else {
     // this case includes expandcell
@@ -191,14 +192,14 @@
 
 
 /// Handle any expandcell
-#let _expand-cells(row, max-len) = {
+#let _expand-cells(row, max-len, cell-function: none) = {
   let free = max-len - _row-len(row)
   for elt in row {
     if is-expandcell(elt) {
-      (table.cell(
-        ..elt.value.at(expandcell-name).at(0),
+      (cell-function(
+        ..elt.value.args,
         colspan: 1 + free,
-        elt.value.at(expandcell-name).at(1)), )
+        elt.value.body), )
       free = 0
     } else {
       (elt, )
@@ -278,8 +279,9 @@
 /// - table (function): Table function to use to build the final table. Intended for use with
 ///   table wrappers from other packages. (The function ```typst arguments``` can be used for
 ///   argument pass-through.)
+/// - cell-function (function): Cell function to use (either `table.cell` or `grid.cell`). You normally do not need to specify this argument.
 /// -> table, content
-#let rowtable(..args, separator: "&", separator-eq: auto, row-filler: none, column-width: none, table: std.table) = {
+#let rowtable(..args, separator: "&", separator-eq: auto, row-filler: none, column-width: none, table: std.table, cell-function: auto) = {
   // type check parameters
   assert(type(separator) == str, message: "Separator must be string")
   assert(
@@ -287,6 +289,10 @@
     separator-eq == auto or
     type(separator-eq) == content and isfuncv(separator-eq, math.equation, align-point, mathsymbol),
     message: "separator-eq must be none, auto, & or math symbol")
+  let cell-function = if cell-function == auto {
+    if table == std.grid { std.grid.cell } else { std.table.cell }
+  } else { cell-function }
+
   // processed positional arguments
   // dictionary with either of these:
   //  (row: array, wrap: function?)
@@ -327,7 +333,7 @@
       continue
     }
     // row inside header/footer
-    if isfuncv(arg, std.table.header, std.table.footer) and arg.children.len() == 1 {
+    if isfuncv(arg, std.table.header, std.table.footer, std.grid.header, std.grid.footer) and arg.children.len() == 1 {
       let body = arg.children.at(0).body
       let row = maybe-makerow(body)
       if row != none {
@@ -350,7 +356,7 @@
     let row = rowrec.row
     let extralen = info.at(str(index), default: 0)
     for elt in row {
-      if isfunc(elt, std.table.cell) and elt.at("rowspan", default: 1) > 1 {
+      if iscell(elt) and elt.at("rowspan", default: 1) > 1 {
         assert("wrap" not in rowrec, message: "rowspan not supported inside table header/footer")
         let rowspan = elt.rowspan
         let colspan = elt.at("colspan", default: 1)
@@ -368,7 +374,7 @@
   // expand expandcells, fill rows, remove tombstones
   let max-len = calc.max(1, calc.max(columns-arg, ..rows.map(r => _row-len(r))))
   let rows = rows.map(r => {
-    let r = _expand-cells(r, max-len)
+    let r = _expand-cells(r, max-len, cell-function: cell-function)
     r.filter(elt => not is-tombstone(elt)) + (row-filler, ) * (max-len - _row-len(r))
   })
 
@@ -380,7 +386,7 @@
       let row = rows.at(row-index)
       // apply row map functions
       if "fmtmap" in parg {
-        row = row.enumerate().map(parg.fmtmap)
+        row = row.enumerate().map(parg.fmtmap.with(cell-function: cell-function))
       }
       // apply row wrap functions
       if "wrap" in parg {
@@ -416,6 +422,19 @@
   )
 }
 
+/// Grid which takes grid cell inputs as rows.
+///
+/// The `rowgrid` function has exactly the same interface as the `rowtable` function; refer to it for full documentation. The only difference is the different defaults for the `table` and `cell-function` arguments. Since `rowgrid` forwards to the `grid` function, cells must use `grid.cell` and lines `grid.hline` and so on, when applicable.
+///
+/// The `rowgrid` function produces a `grid`.
+///
+/// - table (function): The table function to use to build the table.
+/// - cell-function (function): Cell function to use (either `table.cell` or `grid.cell`). You normally do not need to specify this argument.
+/// - ..args (arguments): `rowtable` and `grid` arguments. Refer to the `rowtable` documentation for full description of all arguments.
+#let rowgrid(table: std.grid, cell-function: std.grid.cell, ..args) = {
+  rowtable(table: table, cell-function: cell-function, ..args)
+}
+
 /// An expandcell is a `table.cell` that expands its `colspan` to available width.
 /// The expandcell can be passed alone as a whole row, or should be placed inside a row markup block to form part of a row.
 ///
@@ -425,7 +444,7 @@
 #let expandcell(..args, body) = {
   assert("colspan" not in args.named(), message: "colspan not allowed for expandcell")
   assert("rowspan" not in args.named(), message: "rowspan not allowed for expandcell")
-  metadata(((expandcell-name): (args, body)))
+  metadata(((expandcell-name): true, args: args, body: body))
 }
 
 #let _invalid_cell_arg = ("x", "y", "rowspan", "colspan")
@@ -443,27 +462,27 @@
 /// - elt (any): If this is content, wrap it in a cell with the given extra fields.
 ///   if this is already a cell, unwrap the body and re-wrap it in a new cell, where `elt`'s fields override `fields` if they overlap.
 /// - ..fields (arguments): Extra cell fields to add
-/// _ _cellfunc (function): element function for the table cell
-#let flipcell(..fields, elt, _cellfunc: table.cell) = {
+/// _ cell-function (function): element function for the table cell
+#let flipcell(..fields, elt, cell-function: table.cell) = {
   assert.eq(fields.pos().len(), 0, message: "expected no positional fields")
   let fields = fields.named()
-  if type(elt) == content and isfunc(elt, _cellfunc) {
+  if type(elt) == content and isfunc(elt, cell-function) {
     let fi = elt.fields()
     let body = fi.remove("body")
     let label = fi.remove("label", default: fields.remove("label", default: none))
     _check-cellargs(fi)  // check the new custom args
-    _setlabel(_cellfunc(..fields, ..fi, body), label)
+    _setlabel(cell-function(..fields, ..fi, body), label)
   } else {
     let label = fields.remove("label", default: none)
-    _setlabel(_cellfunc(..fields, elt), label)
+    _setlabel(cell-function(..fields, elt), label)
   }
 }
 
-#let mapcell-adaptor(func, elt, set-cell: (:), _cellfunc: table.cell, use-index: false) = {
+#let mapcell-adaptor(func, elt, set-cell: (:), cell-function: table.cell, use-index: false) = {
   let (index, body) = elt
   let iarg = if use-index { (index, ) } else { () }
-  let flipcell = flipcell.with(_cellfunc: _cellfunc)
-  let iscell(elt) = type(elt) == content and isfunc(elt, _cellfunc)
+  let flipcell = flipcell.with(cell-function: cell-function)
+  let iscell(elt) = type(elt) == content and isfunc(elt, cell-function)
   if iscell(body) {
     let fields = body.fields()
     let cellbody = fields.remove("body")

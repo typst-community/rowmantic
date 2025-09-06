@@ -1,7 +1,7 @@
 // Copyright 2025 Ulrik Sverdrup "bluss" and rowmantic contributors.
 // Distributed under the terms of the EUPL v1.2 or any later version.
 
-#import "../src/lib.typ" as self: rowtable, expandcell, row
+#import "../src/lib.typ" as self: rowtable, rowgrid, expandcell, row
 #import "@preview/tidy:0.4.3"
 
 #let subtitletext = [A Typst package for row-wise table editing]
@@ -28,13 +28,14 @@
   show: block.with(breakable: breakable)
   let scope = if scope == auto { (
     rowtable: rowtable,
+    rowgrid: rowgrid,
     expandcell: expandcell,
     row: row,
   ) } else { scope }
   let evaluated = eval(code.text, mode: "markup", scope: scope)
   set text(size: 0.9em) if small
   show raw: set text(size: 0.9em)
-  table(
+  grid(
     columns: columns,
     stroke: none,
     inset: (x: 0.0em, y: 0.5em),
@@ -70,16 +71,16 @@
 }
 
 = Introduction
-The idea is a row-oriented way to input tables, with just a little less syntactical overhead than the usual `table` function in Typst.
+Rowmantic introduces the `rowtable` function as a row-oriented "frontend" to the usual `table` function in typst.
 
 The `rowtable` function takes a markup block `[...]` per row, and the markup is split internally#footnote[But shallowly - not looking into styled or nested content] on a delimiter which is `&` by default. In all other aspects it works like the usual `table` function, with `stroke`, `fill`, `hline` and so on.
 
 #{
   show raw: set block(stroke: none, width: auto)
-  rowtable(
+  rowgrid(
     separator: "&",
     stroke: none,
-    inset: (x: 2em),
+    inset: (x: 2em, y: 5pt),
     [Input: &
       ```typc
       rowtable(
@@ -87,7 +88,7 @@ The `rowtable` function takes a markup block `[...]` per row, and the markup is 
         [C & D & E])
       ```
       &
-      #table.cell(rowspan: 2, rowtable([A & B], [C & D & E]))
+      #grid.cell(rowspan: 2, rowtable([A & B], [C & D & E]))
     ],
     [Equivalent \ table: &
       ```typc
@@ -100,6 +101,8 @@ The `rowtable` function takes a markup block `[...]` per row, and the markup is 
 }
 
 For improved table ergonomics, the longest row determines the number of columns, and all rows are effectively completed so that they are of full length. This creates a better editing experience, as rows and columns can be filled out gradually.
+
+There is a corresponding `rowgrid` function with identical interface, but for the usual `grid`.
 
 #context {
   outline(depth: 2, target: selector(heading).after(here()))
@@ -377,7 +380,7 @@ example, the colorful annotations add the most of the complexity. `rowtable` con
 #import "@preview/mannot:0.3.0": annot, mark
 
 /// Set up strokes and gutter for long division table
-#let longdiv(..args, table: std.table) = {
+#let longdiv(..args, grid: std.grid) = {
   let cols = args.at("columns")
   let st = std.stroke(args.at("stroke", default: black))
   let stroke = (x, y) => (
@@ -392,25 +395,25 @@ example, the colorful annotations add the most of the complexity. `rowtable` con
       st
     }
   )
-  table(..args,
+  grid(..args,
     column-gutter: (0pt,) * (cols - 2) + (1.5em, ),
     stroke: stroke,
-    std.table.hline(y: 1, stroke: st))
+    std.grid.hline(y: 1, stroke: st))
 }
 
-// Set up marking functions and table cell backgrounds
+// Set up marking functions and grid cell backgrounds
 #let mark = mark.with(outset: (top: 0em, rest: 0.50em))
-#let mkq(..args) = table.cell(fill: luma(70%), mark(..args))
-#let mkn(..args) = table.cell(fill: orange.lighten(50%), mark(..args))
-#let mkdenom(it) = table.cell(fill: blue.lighten(70%), mark(tag: <denom>, it))
-#let mkrem(it)   = table.cell(fill: red.lighten(50%), mark(tag: <rem>, it))
+#let mkq(..args) = grid.cell(fill: luma(70%), mark(..args))
+#let mkn(..args) = grid.cell(fill: orange.lighten(50%), mark(..args))
+#let mkdenom(it) = grid.cell(fill: blue.lighten(70%), mark(tag: <denom>, it))
+#let mkrem(it)   = grid.cell(fill: red.lighten(50%), mark(tag: <rem>, it))
 
 #let um = math.class("unary", math.minus) // unary minus
 #let leftset(x) = box(place(dx: -0.3em, right + bottom, $#x$))
 #let rm = math.class("unary", leftset($(-)$)) // row minus
 
 #show: block.with(breakable: false)
-#rowtable(
+#rowgrid(
   align: right,
   table: longdiv.with(stroke: 1.5pt),
   inset: 0.55em,
@@ -456,22 +459,22 @@ Use a different separator than `&` to use equations with alignment.
 
 === Sizing Delimiters in Annotated Matrix
 
-This example draws a matrix using `rowtable` and inserts iteratively sized
+This example draws a matrix using `rowgrid` and inserts iteratively sized
 delimiters in `rowspan` cells. Grid lines are drawn to show how the table is constructed.
 
 
 #show-example(breakable: true, ```typst
-/// Measure a table's size
+/// Measure a grid's size
 /// Successively remove display of each row
 ///  (first full table, then remove 0, then remove 0 and 1, and so on).
-/// Returns an array of measurements which is a size profile of the array's rows
+/// Returns an array of measurements which is a size profile of the grid's rows
 /// (or columns if `attr: "x"`)
-#let measure-table(t, min: 0, max: 50, attr: "y") = {
+#let measure-grid(t, min: 0, max: 50, attr: "y") = {
   let wh = (x: "width", y: "height").at(attr)
   let result = ()
   for i in range(max) {
     let sz = measure({
-      show table.cell: it => {
+      show grid.cell: it => {
         if it.at(attr) < i { none } else { it }
       }
       t
@@ -487,7 +490,7 @@ delimiters in `rowspan` cells. Grid lines are drawn to show how the table is con
 /// Create an element using `func`; then measure it using `measure-func`
 /// then create the final version of the element again using func, this
 /// time with the size info from the first try.
-#let measure-and-make(func, measure-func: measure-table) = context {
+#let measure-and-make(func, measure-func: measure-grid) = context {
   func(measure-func(func(none)))
 }
 
@@ -497,10 +500,10 @@ delimiters in `rowspan` cells. Grid lines are drawn to show how the table is con
   // use row height information from size profile with one row removed.
   let row = if sizeinfo != none { sizeinfo.at(1).height / nrows } else { 1em }
   let delimheight = row * 0.90 * nrows
-  let delim(p) = table.cell(rowspan: nrows, $lr(#p, size: #delimheight)$, inset: 0em)
+  let delim(p) = grid.cell(rowspan: nrows, $lr(#p, size: #delimheight)$, inset: 0em)
   let open = delim([\[])
   let close = delim([\]])
-  rowtable(
+  rowgrid(
     stroke: 0.10pt + blue,
     align: horizon,
     inset: 0.4em,
@@ -534,13 +537,15 @@ delimiters in `rowspan` cells. Grid lines are drawn to show how the table is con
 #show heading.where(level: 4): set heading(numbering: none, outlined: false)
 
 #{
-  let expose = ("rowtable", "row", "row-split", "expandcell")
+  let expose = ("rowtable", "rowgrid", "row", "row-split", "expandcell")
   let mod = tidy.parse-module(read("/src/rowtable.typ"), name: "Function Reference", old-syntax: true)
   mod.functions = mod.functions.filter(elt => elt.name in expose)
   mod.variables = mod.variables.filter(elt => elt.name in expose)
-  // put rowtable first since it's the single prominent function
+  // put rowtable and rowgrid first since they are the main functions.
   let isrt = elt => elt.name == "rowtable"
-  mod.functions = mod.functions.filter(isrt) + mod.functions.filter(elt => not isrt(elt))
+  let sort-order = ("rowtable", "rowgrid")
+  let if-none(x, default) = if x == none { default } else { x }
+  mod.functions = mod.functions.sorted(key: func => if-none(sort-order.position(elt => func.name == elt), 3))
   tidy.show-module(mod, first-heading-level: 1, show-outline: false, sort-functions: false)
 }
 
