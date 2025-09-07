@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.5.0] - Unreleased
+## [0.5.0] - 2025-09-07
 
 - **Change**: `separator: " "` (a space) now splits on spaces and whitespace in markup #14
 - **Add**: `rowgrid` function which forwards to `rowtable` but with other defaults and creates a grid; rowtable now supports both grids and tables when the appropriate options are passed. #15
