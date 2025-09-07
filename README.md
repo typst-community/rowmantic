@@ -1,7 +1,7 @@
 # `rowmantic`
 **A Typst package for row-wise table editing**
 
-The idea is a row-oriented way to input tables, with just a little less syntactical overhead than the usual `table` function in Typst.
+Rowmantic introduces the `rowtable` function as a row-oriented "frontend" to the usual `table` function in typst.
 
 The `rowtable` function takes a markup block `[...]` per row, and the markup is split internally on a delimiter which is `&` by default. In all other aspects it works like the usual `table` function, with `stroke`, `fill`, `hline` and so on.
 
@@ -22,6 +22,8 @@ is equivalent to this `table`:
 ```
 
 For improved table ergonomics, the longest row determines the number of columns, and all rows are effectively completed so that they are of full length. This creates a better editing experience, as rows and columns can be filled out gradually.
+
+There is a corresponding `rowgrid` function with identical interface, but for the usual `grid`.
 
 ## Getting Started
 
