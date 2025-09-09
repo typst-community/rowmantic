@@ -529,7 +529,6 @@ delimiters in `rowspan` cells. Grid lines are drawn to show how the table is con
 - Multi-row `table.header/footer` are not supported yet.
 - `rowspan` is not supported in rows inside `table.header/footer`.
 - `expandcell` can collide with `rowspan`ned cells (if they are not placed along the left or right side of the table); use `colspan` as a workaround when necessary.
-- `rowtable` does not properly support being used as a front end for `grid`.
 
 #pagebreak(weak: true)
 
