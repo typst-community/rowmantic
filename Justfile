@@ -61,5 +61,5 @@ ci: test doc
 
 # run tt in docker
 tt *args: (package ".typdockerpkg/preview") && (remove ".typdockerpkg/preview")
-    docker run -e TYPST_PACKAGE_PATH=/data/.typdockerpkg/ --rm -it -v $PWD:/data ghcr.io/typst-community/tytanic:0.3.3 --root data --font-path docs/fonts {{args}}
+    docker run -e TYPST_PACKAGE_PATH=/data/.typdockerpkg/ --rm -it -v $PWD:/data ghcr.io/typst-community/tytanic:0.4.0 --root data --font-path docs/fonts {{args}}
 
