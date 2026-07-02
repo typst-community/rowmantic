@@ -49,10 +49,11 @@
     },
   )
 }
-#let title = body => block(text(size: 3em, strong(body)), below: 0.7em)
-#let subtitle = body => text(size: 1.5em, body)
 
+#show title: set block(below: 0.7em / 3)
+#show title: set text(size: 33pt)
 #title[rowmantic]
+#let subtitle = body => text(size: 1.5em, body)
 #subtitle[#subtitletext]
 
 #{
