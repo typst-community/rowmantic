@@ -20,6 +20,9 @@ jobs:
           - typst: "0.14.2"
             tytanic: "0.3.3"
             test-target: test
+          - typst: "0.15.0"
+            tytanic: "0.4.0"
+            test-target: test
             # the docs don't need to build with all versions supported by the package;
             # the latest one is enough
             doc: true
