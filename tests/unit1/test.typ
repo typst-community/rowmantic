@@ -71,6 +71,14 @@ F G~H], sep: " "),  ([A], [B], [C], [D], [E], [F], [G~H]))
 #assert.eq(rowtable(row([A & #cell(colspan: 2)[B]], cell: (stroke: none))),
   table(columns: 3, table.cell(stroke: none)[A], table.cell(colspan: 2, stroke: none)[B]))
 
+// row with multiple arguments
+#assert.eq(rowtable(row([A & B], [C])),
+  table(columns: 3, [A], [B], [C]))
+#assert.eq(rowtable(row([A & B], table.cell(fill: yellow)[C], table.cell[D])),
+  table(columns: 4, [A], [B], table.cell(fill: yellow)[C], [D]))
+#assert.eq(rowtable([A & B], row(table.cell[C]), row(table.cell[D])),
+  table(columns: 2, [A], [B], [C], [], [D], []))
+
 
 // rowgrid
 #assert.eq(rowgrid(table: arguments, separator: ",", grid.header([A, B, C], repeat: false)),

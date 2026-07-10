@@ -303,22 +303,30 @@
   /// return `(row: row)` or none, row being an array, with optional `fmtmap` key.
   /// -> dictionary, none
   let maybe-makerow(arg) = {
-    // unwrap row() function
-    let isrow = is-row(arg)
-    let (arg, fmtrec) = if isrow {
+    // unwrap row() function - one or more arguments inside row
+    let isrowfunc = is-row(arg)
+    let (args, fmtrec) = if isrowfunc {
       let fmtrec = if arg.value.func != none { (fmtmap: arg.value.func) }
-      (arg.value.body, fmtrec)
+      (arg.value.args, fmtrec)
     } else {
-      (arg, none)
+      ((arg, ), none)
     }
 
-    let row = if isfuncv(arg, sequence, text, space) or is-expandcell(arg) {
-      row-split(arg, sep: separator)
-    } else if isfunc(arg, math.equation) and separator-eq != none {
-      let separator-eq = _normalize-equation-sep(separator, separator-eq)
-      _as-equations(row-split(arg.body, sep: separator-eq), block: arg.block)
-    } else if isrow {
-      panic("item in row() is not a valid row, got: " + repr(arg) + ". Hint: add a separator.")
+    // Inside a `row`, accept multiple arguments, just combine the results of them
+    // Inside a `row`, accept unwrapped table cells.
+    let row = none
+    for arg in args {
+      // Note that none + array -> array
+      row += if isfuncv(arg, sequence, text, space) or is-expandcell(arg) {
+        row-split(arg, sep: separator)
+      } else if isfunc(arg, math.equation) and separator-eq != none {
+        let separator-eq = _normalize-equation-sep(separator, separator-eq)
+        _as-equations(row-split(arg.body, sep: separator-eq), block: arg.block)
+      } else if isrowfunc and iscell(arg) {
+        (arg, )
+      } else if isrowfunc {
+        panic("item in row() is not a valid row, got: " + repr(arg) + ". Hint: add a separator.")
+      }
     }
     if row != none {
       (row: row) + fmtrec
@@ -515,13 +523,15 @@
 ///  content, signature: function(int, any) -> any. Note that this is just the index in the row,
 ///  which does not correspond to the column number in complex layouts.
 /// - cell (dictionary): set these `table.cell` settings on each cell of the row, after resolving row lengths and padding rows. The properties `x`, `y`, `colspan`, `rowspan` are not allowed here.
-#let row(body, map: none, imap: none, cell: (:)) = {
+#let row(..args, map: none, imap: none, cell: (:)) = {
   assert(map == none or imap == none, message: "only one of map and imap can be passed")
+  assert(args.named().len() == 0, message: "Unknown arguments to `row`")
+  assert(args.pos().len() > 0, message: "Missing positional element(s) to row")
   if map == none { map = imap }
   if map == none { map = _identity }
   _typecheck("map", map, function)
   _typecheck("cell", cell, dictionary)
   _check-cellargs(cell)
   let func = mapcell-adaptor.with(map, set-cell: cell, use-index: imap != none)
-  metadata(((row-name): true, func: func, body: body))
+  metadata(((row-name): true, func: func, args: args.pos()))
 }
